@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface LoginFormProps {
   onLogin: () => void;
@@ -11,6 +11,12 @@ export function LoginForm({ onLogin, onCreateAccount, onForgotPassword }: LoginF
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,14 +40,12 @@ export function LoginForm({ onLogin, onCreateAccount, onForgotPassword }: LoginF
         {/* Header */}
         <div className="border-b-2 border-green-500/30 px-6 py-4 bg-green-950/20">
           <pre className="text-green-400 text-xs leading-tight text-center">
-{`
- ███╗   ██╗███████╗██████╗ ██╗   ██╗██╗      █████╗
- ████╗  ██║██╔════╝██╔══██╗██║   ██║██║     ██╔══██╗
- ██╔██╗ ██║█████╗  ██████╔╝██║   ██║██║     ███████║
- ██║╚██╗██║██╔══╝  ██╔══██╗██║   ██║██║     ██╔══██║
- ██║ ╚████║███████╗██████╔╝╚██████╔╝███████╗██║  ██║
- ╚═╝  ╚═══╝╚══════╝╚═════╝  ╚═════╝ ╚══════╝╚═╝  ╚═╝
-`}
+{`███╗   ██╗███████╗██████╗ ██╗   ██╗██╗      █████╗
+████╗  ██║██╔════╝██╔══██╗██║   ██║██║     ██╔══██╗
+██╔██╗ ██║█████╗  ██████╔╝██║   ██║██║     ███████║
+██║╚██╗██║██╔══╝  ██╔══██╗██║   ██║██║     ██╔══██║
+██║ ╚████║███████╗██████╔╝╚██████╔╝███████╗██║  ██║
+╚═╝  ╚═══╝╚══════╝╚═════╝  ╚═════╝ ╚══════╝╚═╝  ╚═╝`}
           </pre>
           <div className="text-center mt-2 space-y-1">
             <div className="text-green-400 text-sm">AI-Assisted Development Platform</div>
@@ -90,7 +94,7 @@ export function LoginForm({ onLogin, onCreateAccount, onForgotPassword }: LoginF
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="enter username..."
+                  placeholder="email address"
                   className="w-full bg-transparent border-none outline-none text-green-400 placeholder:text-green-800 text-sm"
                   autoFocus
                   disabled={loading}
@@ -109,7 +113,7 @@ export function LoginForm({ onLogin, onCreateAccount, onForgotPassword }: LoginF
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="enter password..."
+                  placeholder="**********"
                   className="w-full bg-transparent border-none outline-none text-green-400 placeholder:text-green-800 text-sm"
                   disabled={loading}
                 />
@@ -177,7 +181,7 @@ export function LoginForm({ onLogin, onCreateAccount, onForgotPassword }: LoginF
               Secure Session • 256-bit Encryption
             </div>
             <div className="text-green-700">
-              {new Date().toLocaleDateString()} • {new Date().toLocaleTimeString()}
+              {currentTime.toLocaleDateString()} • {currentTime.toLocaleTimeString()}
             </div>
           </div>
         </div>
