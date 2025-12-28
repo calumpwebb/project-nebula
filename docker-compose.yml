@@ -10,6 +10,29 @@ services:
       - TEMPORAL_ADDRESS=temporal:7233
     volumes:
       - temporal-data:/var/lib/temporal
+    healthcheck:
+      test: ["CMD", "temporal", "operator", "cluster", "health"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  worker:
+    build:
+      context: .
+      dockerfile: apps/worker/Dockerfile
+      target: development
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TASK_QUEUE=default
+      - TEMPORAL_NAMESPACE=default
+    volumes:
+      # Hot reload: mount source code
+      - ./apps/worker/src:/app/apps/worker/src:ro
+      - ./packages/shared/src:/app/packages/shared/src:ro
+    depends_on:
+      temporal:
+        condition: service_healthy
+    restart: unless-stopped
 
   convex:
     image: convex/convex-local-backend:latest
