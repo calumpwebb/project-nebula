@@ -55,14 +55,8 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
-  convex:
-    image: convex/convex-local-backend:latest
-    ports:
-      - "3210:3210"   # Backend
-      - "3211:3211"   # Dashboard
-    volumes:
-      - convex-data:/convex/data
+  # Convex runs via `npx convex dev` (no Docker image available)
+  # See: https://docs.convex.dev/getting-started
 
 volumes:
   temporal-db-data:
-  convex-data:
