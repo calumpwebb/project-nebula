@@ -30,13 +30,6 @@ services:
     depends_on:
       temporal-db:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://localhost:7233/health || exit 1"]
-      interval: 5s
-      timeout: 5s
-      retries: 20
-      start_period: 60s
-
   worker:
     build:
       context: .
@@ -51,8 +44,7 @@ services:
       - ./apps/worker/src:/app/apps/worker/src:ro
       - ./packages/shared/src:/app/packages/shared/src:ro
     depends_on:
-      temporal:
-        condition: service_healthy
+      - temporal
     restart: unless-stopped
 
   # Convex runs via `npx convex dev` (no Docker image available)
