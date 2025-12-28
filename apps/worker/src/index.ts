@@ -4,7 +4,7 @@ import * as activities from './activities'
 // 12-factor: Configuration via environment variables
 const config = {
   temporalAddress: process.env.TEMPORAL_ADDRESS || 'localhost:7233',
-  taskQueue: process.env.TASK_QUEUE || 'nebula-missions',
+  taskQueue: process.env.TASK_QUEUE || 'default',
   namespace: process.env.TEMPORAL_NAMESPACE || 'default',
 }
 
