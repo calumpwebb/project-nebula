@@ -12,9 +12,9 @@ Project Nebula is a developer HUD for AI-assisted coding. TypeScript monorepo wi
 ## Commands
 
 ```bash
-just up            # Start Docker + dev servers + desktop app
-just down          # Stop everything
-just clean         # Delete Docker volumes (fresh start)
+just up            # Start k3d cluster + all services via Tilt
+just down          # Stop services (keeps cluster)
+just reset         # Full reset (delete cluster + registry)
 
 just check         # Type-check all packages
 just lint          # Lint everything
@@ -33,12 +33,25 @@ pnpm turbo test --filter=@nebula/shared    # Test shared only
 pnpm turbo build --filter=@nebula/convex   # Build convex only
 ```
 
+### Development UIs
+
+After `just up`:
+- **Tilt UI**: http://localhost:10350 (dev orchestration, logs)
+- **Temporal UI**: http://localhost:8080 (workflow debugging)
+- **Convex Dashboard**: http://localhost:6791 (data browser)
+
 ## Architecture
 
 ```
+infra/                 # k3d + Tilt configuration
+  ctlptl.yaml          # Cluster + registry definition
+  Tiltfile             # Main orchestration
+  lib/Tiltfile         # Helper functions
+  services/            # Per-service configs
+
 apps/
-  desktop/     # Tauri 2 + React + TailwindCSS (Geist font, dark theme)
-  worker/      # Temporal worker (mission workflows)
+  desktop/     # Tauri 2 + React + TailwindCSS (runs locally)
+  worker/      # Temporal worker (runs in k3d)
 
 packages/
   convex/      # Convex backend (schema, queries, mutations)
@@ -47,7 +60,7 @@ packages/
 
 ### Mission Phases
 
-All work flows through four phases: **Brainstorm → Design → Plan → Execute**
+All work flows through four phases: **Brainstorm -> Design -> Plan -> Execute**
 
 Temporal workflows orchestrate phase transitions. Each phase can have approval gates.
 
@@ -60,10 +73,10 @@ Temporal workflows orchestrate phase transitions. Each phase can have approval g
 ## Convex + Temporal Integration
 
 ```
-Desktop → Convex: User actions via mutations
-Convex → Temporal: Kick off workflows via HTTP actions
-Temporal → Convex: Activities update state via mutations
-Convex → Desktop: Real-time subscriptions
+Desktop -> Convex: User actions via mutations
+Convex -> Temporal: Kick off workflows via HTTP actions
+Temporal -> Convex: Activities update state via mutations
+Convex -> Desktop: Real-time subscriptions
 ```
 
 ## Development Notes
