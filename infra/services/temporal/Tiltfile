@@ -1,0 +1,18 @@
+load('../../lib/Tiltfile', 'infra_service')
+
+k8s_yaml('./temporal.k8s.yaml')
+k8s_yaml('./temporal-ui.k8s.yaml')
+
+k8s_resource(
+    'temporal',
+    port_forwards=['7233:7233', '7243:7243'],
+    resource_deps=['postgres'],
+    labels=['infra'],
+)
+
+k8s_resource(
+    'temporal-ui',
+    port_forwards=['8080:8080'],
+    resource_deps=['temporal'],
+    labels=['infra'],
+)

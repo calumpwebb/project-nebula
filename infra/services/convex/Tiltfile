@@ -1,0 +1,17 @@
+load('../../lib/Tiltfile', 'infra_service')
+
+k8s_yaml('./backend.k8s.yaml')
+k8s_yaml('./dashboard.k8s.yaml')
+
+k8s_resource(
+    'convex-backend',
+    port_forwards=['3210:3210', '3211:3211'],
+    labels=['infra'],
+)
+
+k8s_resource(
+    'convex-dashboard',
+    port_forwards=['6791:6791'],
+    resource_deps=['convex-backend'],
+    labels=['infra'],
+)
