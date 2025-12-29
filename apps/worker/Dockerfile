@@ -43,6 +43,8 @@ ENV NODE_ENV=development
 
 WORKDIR /app/apps/worker
 
+EXPOSE 8080
+
 # Hot reload via tsx watch
 CMD ["pnpm", "dev"]
 
@@ -74,5 +76,7 @@ COPY --from=builder /app/packages/shared ./packages/shared
 COPY --from=builder /app/apps/worker/package.json ./apps/worker/
 
 WORKDIR /app/apps/worker
+
+EXPOSE 8080
 
 CMD ["node", "dist/index.js"]
