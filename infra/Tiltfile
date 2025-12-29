@@ -1,0 +1,26 @@
+# Ensure cluster exists before doing anything
+local('k3d cluster list | grep -q nebula || ctlptl apply -f ctlptl.yaml', dir=config.main_dir + '/infra')
+
+allow_k8s_contexts('k3d-nebula')
+
+# Load helpers
+load('./lib/Tiltfile', 'nebula_service', 'infra_service')
+
+# Infrastructure services
+include('./services/postgres/Tiltfile')
+include('./services/temporal/Tiltfile')
+include('./services/convex/Tiltfile')
+
+# Application services
+include('./services/nebula-worker/Tiltfile')
+
+# Desktop app (runs locally, not in k8s)
+local_resource(
+    'desktop',
+    serve_cmd='pnpm tauri dev',
+    serve_dir='../apps/desktop',
+    deps=['../apps/desktop/src'],
+    labels=['app'],
+    resource_deps=['convex-backend'],
+    auto_init=False,
+)
