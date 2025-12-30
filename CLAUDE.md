@@ -30,6 +30,7 @@ apps/<name>/deploy/manifest.ts (cdk8s), packages/convex, packages/shared, infra/
 - Convex uses string literals matching enum values ('brainstorm', 'design', etc.)
 - Run `just up` before type-checking convex (generates _generated/)
 - Command timeouts: Use 15s max for polling/waiting commands, then re-check. Avoids long waits. (Exception: test suites can use longer timeouts)
+- Simple scripts: No fancy UI, colors, or box drawing. Plain text output only.
 
 ## Mission Phases
 Brainstorm -> Design -> Plan -> Execute
