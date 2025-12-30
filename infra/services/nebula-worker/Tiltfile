@@ -20,5 +20,5 @@ k8s_resource(
     'nebula-worker',
     port_forwards=['8081:8080'],
     resource_deps=['temporal'],
-    labels=['app'],
+    labels=['nebula'],
 )

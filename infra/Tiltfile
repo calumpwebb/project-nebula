@@ -21,6 +21,6 @@ local_resource(
     'nebula-desktop',
     serve_cmd='pnpm tauri dev',
     serve_dir='../apps/desktop',
-    labels=['app'],
+    labels=['nebula'],
     resource_deps=['convex-backend', 'nebula-worker'],
 )
