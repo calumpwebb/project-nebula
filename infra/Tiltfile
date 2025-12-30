@@ -18,7 +18,7 @@ include('./services/nebula-worker/Tiltfile')
 
 # Desktop app (runs locally, not in k8s)
 local_resource(
-    'desktop',
+    'nebula-desktop',
     serve_cmd='pnpm tauri dev',
     serve_dir='../apps/desktop',
     labels=['app'],
