@@ -5,6 +5,12 @@ use tauri_plugin_updater::UpdaterExt;
 /// Check for updates and handle the update flow.
 /// Returns Ok(true) if app should continue, Ok(false) if update is in progress.
 pub async fn check_and_update(app: &AppHandle) -> Result<bool, Box<dyn std::error::Error>> {
+    // Skip update check in debug builds (dev mode)
+    if cfg!(debug_assertions) {
+        info!("Skipping update check (debug build)");
+        return Ok(true);
+    }
+
     // Skip update check if --skip-update flag was passed
     if std::env::args().any(|arg| arg == "--skip-update") {
         info!("Skipping update check (--skip-update flag)");
