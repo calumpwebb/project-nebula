@@ -1,86 +1,66 @@
-# CLAUDE.md
+# Project Nebula
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+**Note**: This project uses [bd (beads)](https://github.com/steveyegge/beads)
+for issue tracking. Use `bd` commands instead of markdown TODOs.
+See @AGENTS.md for workflow details.
 
-## Project Overview
+## Agent System
+Global agents: ~/.claude/CLAUDE.md
+Orchestrator-first routing
 
-Project Nebula is a developer HUD for AI-assisted coding. TypeScript monorepo with:
-- **Convex** - Real-time backend (local self-hosted)
-- **Temporal** - Workflow orchestration for missions
-- **Tauri** - Desktop app (React + TailwindCSS)
+---
+
+## Quick Context
+Developer HUD for AI-assisted coding. TypeScript monorepo: Tauri desktop, Convex backend (self-hosted), Temporal workflows.
+
+## Tech Stack
+Tauri 2, React, TailwindCSS, Convex, Temporal, k3d, Tilt, pnpm, Turbo
 
 ## Commands
+| Action | Command |
+|--------|---------|
+| Start all | `just up` |
+| Stop | `just down` |
+| Reset | `just reset` |
+| Synth infra | `just synth` |
+| Type-check | `just check` |
+| Lint | `just lint` |
+| Test | `just test` |
+| Build | `just build` |
+| Single pkg | `pnpm turbo check --filter=@nebula/worker` |
 
-```bash
-just up            # Start k3d cluster + all services via Tilt
-just down          # Stop services (keeps cluster)
-just reset         # Full reset (delete cluster + registry)
+## Dev UIs
+Tilt: localhost:10350 | Temporal: localhost:8080 | Convex: localhost:6791
 
-just check         # Type-check all packages
-just lint          # Lint everything
-just test          # Run tests
-just build         # Production build
-just desktop-build # Build desktop app for production
-```
-
-### Single-package commands
-
-Use Turbo's filter to target specific packages:
-
-```bash
-pnpm turbo check --filter=@nebula/worker   # Type-check worker only
-pnpm turbo test --filter=@nebula/shared    # Test shared only
-pnpm turbo build --filter=@nebula/convex   # Build convex only
-```
-
-### Development UIs
-
-After `just up`:
-- **Tilt UI**: http://localhost:10350 (dev orchestration, logs)
-- **Temporal UI**: http://localhost:8080 (workflow debugging)
-- **Convex Dashboard**: http://localhost:6791 (data browser)
-
-## Architecture
-
-```
-infra/                 # k3d + Tilt configuration
-  ctlptl.yaml          # Cluster + registry definition
-  Tiltfile             # Main orchestration
-  lib/Tiltfile         # Helper functions
-  services/            # Per-service configs
-
-apps/
-  desktop/     # Tauri 2 + React + TailwindCSS (runs locally)
-  worker/      # Temporal worker (runs in k3d)
-
-packages/
-  convex/      # Convex backend (schema, queries, mutations)
-  shared/      # Shared TypeScript types + utilities
-```
-
-### Mission Phases
-
-All work flows through four phases: **Brainstorm -> Design -> Plan -> Execute**
-
-Temporal workflows orchestrate phase transitions. Each phase can have approval gates.
+## Structure
+apps/<name>/deploy/manifest.ts (cdk8s definitions), packages/convex, packages/shared, infra/lib (generators)
 
 ## Key Patterns
+- Enums over strings: `import { TicketStatus, MissionPhase } from '@nebula/shared'`
+- Convex uses string literals matching enum values ('brainstorm', 'design', etc.)
+- Run `just up` before type-checking convex (generates _generated/)
+- Link tickets to code: When there's a relevant ticket, add a comment near the code (e.g., `// TODO(NEBULA-xxx): description`). Helps future readers know there's tracked work.
 
-- **Enums over magic strings** - Use TypeScript enums from `@nebula/shared` for status fields
-- **Shared types** - `import { Ticket, TicketStatus, Mission, MissionPhase } from '@nebula/shared'`
-- **Convex schema uses string unions** - Convex validators use string literals, not TS enums. The values match the enum string values (e.g., `'brainstorm'`, `'design'`).
+## Mission Phases
+Brainstorm -> Design -> Plan -> Execute
 
-## Convex + Temporal Integration
+## Documentation
+Index: `docs/KNOWLEDGE_BASE.md`
 
+## Planning & Execution
+
+**Wave-based parallelization**: All implementation plans should be structured as waves of parallel tasks, not sequential steps.
+
+1. **Analyze dependencies** - Map which tasks depend on others
+2. **Group into waves** - Tasks with no deps or same deps run together
+3. **Execute with subagents** - Dispatch parallel agents per wave, wait for wave completion before next wave
+
+Example structure:
 ```
-Desktop -> Convex: User actions via mutations
-Convex -> Temporal: Kick off workflows via HTTP actions
-Temporal -> Convex: Activities update state via mutations
-Convex -> Desktop: Real-time subscriptions
+Wave 1 (no deps): A1, A2, A3, A4 → 4 parallel agents
+Wave 2 (needs wave 1): B1, B2, B3 → 3 parallel agents
+Wave 3 (needs wave 2): C1 → 1 agent
+Wave 4: Merge + test
 ```
 
-## Development Notes
-
-- Convex generates `_generated/` files when running. Run `just up` before type-checking convex.
-- Temporal server: `localhost:7233` (gRPC), `localhost:8233` (Web UI)
-- Convex backend: `localhost:3210`, dashboard: `localhost:3211`
+Plans go in `docs/plans/YYYY-MM-DD-<feature>.md` with wave structure clearly marked.

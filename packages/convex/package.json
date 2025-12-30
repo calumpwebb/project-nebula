@@ -10,10 +10,13 @@
     "test": "echo 'No tests yet'"
   },
   "dependencies": {
+    "@convex-dev/better-auth": "^0.10.9",
     "@nebula/shared": "workspace:*",
-    "convex": "^1.17.4"
+    "better-auth": "1.4.9",
+    "convex": "^1.31.2"
   },
   "devDependencies": {
+    "@convex-dev/rate-limiter": "^0.3.2",
     "typescript": "^5.7.2"
   }
 }
