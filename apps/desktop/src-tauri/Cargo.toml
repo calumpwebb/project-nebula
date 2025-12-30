@@ -1,5 +1,6 @@
 [package]
 name = "nebula-desktop"
+# NOTE: Version is overridden by CI from git tag
 version = "0.1.0"
 description = "Project Nebula - Developer HUD for AI-assisted coding"
 authors = ["you"]
