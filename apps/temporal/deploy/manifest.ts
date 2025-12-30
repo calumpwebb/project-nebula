@@ -16,7 +16,7 @@ export default [
   }),
 
   app('temporal', {
-    image: 'temporalio/auto-setup:latest',
+    image: 'temporalio/auto-setup:1.29.1',
     labels: ['temporal'],
     portForwards: ['7233', '7243'],
     resourceDeps: ['temporal-db'],
@@ -30,7 +30,7 @@ export default [
   }),
 
   app('temporal-ui', {
-    image: 'temporalio/ui:latest',
+    image: 'temporalio/ui:2.44.0',
     labels: ['temporal'],
     portForwards: ['8080'],
     resourceDeps: ['temporal'],

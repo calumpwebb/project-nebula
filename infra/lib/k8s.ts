@@ -105,6 +105,7 @@ export function generateK8sResources(
           containers: [{
             name,
             image,
+            imagePullPolicy: 'IfNotPresent',
             ports: [{ containerPort: STANDARDS.healthPort, name: 'health' }],
             env: Object.entries(env).map(([n, value]) => ({ name: n, value: String(value) })),
             readinessProbe: {
