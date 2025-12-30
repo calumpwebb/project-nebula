@@ -3,8 +3,14 @@
 Developer HUD for AI-assisted coding. TypeScript monorepo: Tauri desktop, Convex backend (self-hosted), Temporal workflows.
 
 ## Issue Tracking
-Uses bd (beads) for ALL tracking. No markdown TODOs.
-Details: `AGENTS.md`
+Uses bd (beads) for ALL tracking. No markdown TODOs. Details: `AGENTS.md`
+- **Over-use beads**: Track everything, not just major items. We want full context history.
+- If no ticket exists for work being done, create one first (`bd create`).
+
+## Git Workflow
+- **Commit often**: Be proactive with commits and pushes. Small, frequent commits > large batches.
+- **Ticket in commits**: Always include ticket number(s): `feat(NEBULA-123):` or `fix(NEBULA-456, NEBULA-789):`
+- **One ticket per commit**: Scope commits to a single ticket when possible.
 
 ## Tech Stack
 Tauri 2, React, TailwindCSS, Convex, Temporal, k3d, Tilt, pnpm, Turbo
