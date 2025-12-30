@@ -1,13 +1,15 @@
 # Ensure cluster exists before doing anything
-local('k3d cluster list | grep -q nebula || ctlptl apply -f ctlptl.yaml', dir=config.main_dir + '/infra')
+local('k3d cluster list | grep -q nebula || ctlptl apply -f ctlptl.yaml')
 
 allow_k8s_contexts('k3d-nebula')
+
+# Use local registry for all images
+default_registry('nebula-registry:5000')
 
 # Load helpers
 load('./lib/Tiltfile', 'nebula_service', 'infra_service')
 
 # Infrastructure services
-include('./services/postgres/Tiltfile')
 include('./services/temporal/Tiltfile')
 include('./services/convex/Tiltfile')
 
@@ -21,6 +23,6 @@ local_resource(
     serve_dir='../apps/desktop',
     deps=['../apps/desktop/src'],
     labels=['app'],
-    resource_deps=['convex-backend'],
+    resource_deps=['convex-backend', 'nebula-worker'],
     auto_init=False,
 )

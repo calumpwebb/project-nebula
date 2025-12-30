@@ -28,6 +28,9 @@ spec:
       containers:
         - name: convex-backend
           image: ghcr.io/get-convex/convex-backend:latest
+          env:
+            - name: DISABLE_BEACON
+              value: 'true'
           ports:
             - containerPort: 3210
               name: backend

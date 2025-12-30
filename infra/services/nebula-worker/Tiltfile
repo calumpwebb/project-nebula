@@ -1,13 +1,16 @@
 load('../../lib/Tiltfile', 'nebula_service')
 
+# Use config.main_dir (infra/) to build absolute paths
+project_root = config.main_dir + '/..'
+
 docker_build(
-    'nebula-registry:5000/nebula-worker',
-    '../..',
-    dockerfile='../../apps/worker/Dockerfile',
+    'nebula-worker',
+    project_root,
+    dockerfile=project_root + '/apps/worker/Dockerfile',
     target='development',
     live_update=[
-        sync('../../apps/worker/src', '/app/apps/worker/src'),
-        sync('../../packages/shared/src', '/app/packages/shared/src'),
+        sync(project_root + '/apps/worker/src', '/app/apps/worker/src'),
+        sync(project_root + '/packages/shared/src', '/app/packages/shared/src'),
     ],
 )
 

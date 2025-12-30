@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: postgres-pvc
+  name: temporal-db-pvc
 spec:
   accessModes:
     - ReadWriteOnce
@@ -12,18 +12,18 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: postgres
+  name: temporal-db
   labels:
-    app: postgres
+    app: temporal-db
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: postgres
+      app: temporal-db
   template:
     metadata:
       labels:
-        app: postgres
+        app: temporal-db
     spec:
       containers:
         - name: postgres
@@ -53,15 +53,15 @@ spec:
       volumes:
         - name: postgres-data
           persistentVolumeClaim:
-            claimName: postgres-pvc
+            claimName: temporal-db-pvc
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres
+  name: temporal-db
 spec:
   selector:
-    app: postgres
+    app: temporal-db
   ports:
     - port: 5432
       targetPort: 5432

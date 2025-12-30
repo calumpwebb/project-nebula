@@ -42,24 +42,22 @@ spec:
             - name: POSTGRES_PWD
               value: temporal
             - name: POSTGRES_SEEDS
-              value: postgres
+              value: temporal-db
             - name: DYNAMIC_CONFIG_FILE_PATH
               value: /etc/temporal/config/dynamicconfig/development-sql.yaml
           volumeMounts:
             - name: dynamicconfig
               mountPath: /etc/temporal/config/dynamicconfig
           readinessProbe:
-            exec:
-              command: ['tctl', '--address', '127.0.0.1:7233', 'workflow', 'list']
+            tcpSocket:
+              port: 7233
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 7233
             initialDelaySeconds: 30
             periodSeconds: 10
-            timeoutSeconds: 5
-          livenessProbe:
-            exec:
-              command: ['tctl', '--address', '127.0.0.1:7233', 'workflow', 'list']
-            initialDelaySeconds: 60
-            periodSeconds: 30
-            timeoutSeconds: 5
       volumes:
         - name: dynamicconfig
           configMap:

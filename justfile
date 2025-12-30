@@ -29,6 +29,10 @@ test:
 build:
     pnpm turbo build
 
+# Run desktop app in dev mode
+app:
+    cd apps/desktop && pnpm tauri dev
+
 # Build desktop app for production
-desktop-build:
+app-build:
     cd apps/desktop && pnpm tauri build
