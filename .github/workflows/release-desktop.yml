@@ -74,10 +74,47 @@ jobs:
           cd apps/desktop
           pnpm tauri build --target universal-apple-darwin
         env:
+          VITE_CONVEX_URL: ${{ secrets.VITE_CONVEX_URL }}
+          VITE_CONVEX_SITE_URL: ${{ secrets.VITE_CONVEX_SITE_URL }}
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+
+      - name: Hide .VolumeIcon.icns in DMG
+        run: |
+          DMG_PATH=$(find apps/desktop/src-tauri/target/universal-apple-darwin/release/bundle/dmg -name "*.dmg" | head -1)
+          DMG_DIR=$(dirname "$DMG_PATH")
+          DMG_NAME=$(basename "$DMG_PATH")
+          TEMP_DMG="$DMG_DIR/temp_$DMG_NAME"
+          VOLUME_NAME="Project Nebula"
+
+          hdiutil convert "$DMG_PATH" -format UDRW -o "$TEMP_DMG"
+          hdiutil attach "${TEMP_DMG}.dmg" -mountpoint "/Volumes/$VOLUME_NAME"
+
+          osascript <<EOF
+          tell application "Finder"
+            tell disk "$VOLUME_NAME"
+              open
+              set current view of container window to icon view
+              set theViewOptions to the icon view options of container window
+              set icon size of theViewOptions to 100
+              set the bounds of container window to {400, 100, 1060, 500}
+              set position of item ".VolumeIcon.icns" to {1000, 1000}
+              set position of item ".fseventsd" to {1100, 1000}
+              close
+              open
+              delay 2
+              close
+            end tell
+          end tell
+          EOF
+
+          sync
+          hdiutil detach "/Volumes/$VOLUME_NAME"
+          rm "$DMG_PATH"
+          hdiutil convert "${TEMP_DMG}.dmg" -format UDZO -o "$DMG_PATH"
+          rm "${TEMP_DMG}.dmg"
 
       - name: Upload macOS artifacts
         uses: actions/upload-artifact@v4
@@ -131,6 +168,9 @@ jobs:
         run: |
           cd apps/desktop
           pnpm tauri build
+        env:
+          VITE_CONVEX_URL: ${{ secrets.VITE_CONVEX_URL }}
+          VITE_CONVEX_SITE_URL: ${{ secrets.VITE_CONVEX_SITE_URL }}
 
       - name: Upload Linux artifacts
         uses: actions/upload-artifact@v4
