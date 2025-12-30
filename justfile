@@ -44,3 +44,7 @@ convex-key:
 # Synthesize infrastructure (K8s YAML + Tiltfile)
 synth:
     cd infra && pnpm synth
+
+# Release desktop app (creates tag, triggers CI)
+release-desktop:
+    ./scripts/release-desktop.sh
