@@ -3,9 +3,13 @@ import ReactDOM from "react-dom/client";
 import { ConvexReactClient } from "convex/react";
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
 import { RouterProvider } from "@tanstack/react-router";
+import { attachConsole } from "@tauri-apps/plugin-log";
 import { authClient } from "./lib/auth-client";
 import { router } from "./router";
 import "./styles/globals.css";
+
+// Forward console.log/error/etc to Rust logger
+attachConsole();
 
 const convex = new ConvexReactClient(
   import.meta.env.VITE_CONVEX_URL as string,

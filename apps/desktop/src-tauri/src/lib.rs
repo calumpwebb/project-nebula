@@ -15,6 +15,7 @@ pub fn run() {
                 .targets([
                     Target::new(TargetKind::Stdout),
                     Target::new(TargetKind::LogDir { file_name: None }),
+                    Target::new(TargetKind::Webview),
                 ])
                 .build(),
         )
