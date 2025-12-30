@@ -90,7 +90,7 @@ jobs:
           VOLUME_NAME="Project Nebula"
 
           hdiutil convert "$DMG_PATH" -format UDRW -o "$TEMP_DMG"
-          hdiutil attach "${TEMP_DMG}.dmg" -mountpoint "/Volumes/$VOLUME_NAME"
+          hdiutil attach "$TEMP_DMG" -mountpoint "/Volumes/$VOLUME_NAME"
 
           osascript <<EOF
           tell application "Finder"
@@ -113,8 +113,8 @@ jobs:
           sync
           hdiutil detach "/Volumes/$VOLUME_NAME"
           rm "$DMG_PATH"
-          hdiutil convert "${TEMP_DMG}.dmg" -format UDZO -o "$DMG_PATH"
-          rm "${TEMP_DMG}.dmg"
+          hdiutil convert "$TEMP_DMG" -format UDZO -o "$DMG_PATH"
+          rm "$TEMP_DMG"
 
       - name: Upload macOS artifacts
         uses: actions/upload-artifact@v4
