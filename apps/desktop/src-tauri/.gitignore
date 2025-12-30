@@ -1,2 +1,5 @@
 target/
 gen/
+
+# Tauri update signing key (private - never commit)
+.tauri-updater-key
