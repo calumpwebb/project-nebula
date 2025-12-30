@@ -1,5 +1,7 @@
 mod updater;
 
+use tauri_plugin_log::{Target, TargetKind};
+
 #[tauri::command]
 fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
@@ -8,6 +10,14 @@ fn greet(name: &str) -> String {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(
+            tauri_plugin_log::Builder::new()
+                .targets([
+                    Target::new(TargetKind::Stdout),
+                    Target::new(TargetKind::LogDir { file_name: None }),
+                ])
+                .build(),
+        )
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(|app| {
@@ -16,7 +26,7 @@ pub fn run() {
             // Run update check before showing window
             tauri::async_runtime::spawn(async move {
                 if let Err(e) = updater::check_and_update(&handle).await {
-                    eprintln!("[updater] Error: {}", e);
+                    log::error!("[updater] Error: {}", e);
                 }
             });
 

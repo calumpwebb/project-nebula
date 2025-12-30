@@ -9,6 +9,9 @@ Details: `AGENTS.md`
 ## Tech Stack
 Tauri 2, React, TailwindCSS, Convex, Temporal, k3d, Tilt, pnpm, Turbo
 
+## Desktop Logging
+Uses `tauri-plugin-log`. Logs to stdout + platform log dir (macOS: `~/Library/Logs/com.nebula.desktop/`). Use `log::info!`, `log::error!`, etc.
+
 ## Commands
 | Action | Command |
 |--------|---------|

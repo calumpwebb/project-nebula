@@ -1,3 +1,4 @@
+use log::{error, info};
 use tauri::AppHandle;
 use tauri_plugin_updater::UpdaterExt;
 
@@ -6,30 +7,30 @@ use tauri_plugin_updater::UpdaterExt;
 pub async fn check_and_update(app: &AppHandle) -> Result<bool, Box<dyn std::error::Error>> {
     // Skip update check if --skip-update flag was passed
     if std::env::args().any(|arg| arg == "--skip-update") {
-        println!("[updater] Skipping update check (--skip-update flag)");
+        info!("Skipping update check (--skip-update flag)");
         return Ok(true);
     }
 
     let updater = app.updater()?;
 
-    println!("[updater] Checking for updates...");
+    info!("Checking for updates...");
 
     let update = match updater.check().await {
         Ok(Some(update)) => update,
         Ok(None) => {
-            println!("[updater] No update available");
+            info!("No update available");
             return Ok(true);
         }
         Err(e) => {
             // If update check fails (offline, etc.), allow app to continue
-            eprintln!("[updater] Update check failed: {}. Continuing anyway.", e);
+            error!("Update check failed: {}. Continuing anyway.", e);
             return Ok(true);
         }
     };
 
     let current = update.current_version.to_string();
     let latest = update.version.clone();
-    println!("[updater] Update available: {} -> {}", current, latest);
+    info!("Update available: {} -> {}", current, latest);
 
     // Show native dialog - blocking, no dismiss option
     let message = format!(
@@ -49,7 +50,7 @@ pub async fn check_and_update(app: &AppHandle) -> Result<bool, Box<dyn std::erro
     .await?;
 
     if should_update {
-        println!("[updater] Downloading update...");
+        info!("Downloading update...");
 
         // Download and install
         let mut downloaded = 0;
@@ -58,16 +59,16 @@ pub async fn check_and_update(app: &AppHandle) -> Result<bool, Box<dyn std::erro
                 |chunk_length, content_length| {
                     downloaded += chunk_length;
                     if let Some(total) = content_length {
-                        println!("[updater] Downloaded {} / {} bytes", downloaded, total);
+                        info!("Downloaded {} / {} bytes", downloaded, total);
                     }
                 },
                 || {
-                    println!("[updater] Download complete, installing...");
+                    info!("Download complete, installing...");
                 },
             )
             .await?;
 
-        println!("[updater] Update installed, restarting...");
+        info!("Update installed, restarting...");
         app.restart();
     }
 
