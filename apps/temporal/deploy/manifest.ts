@@ -16,7 +16,7 @@ export default [
     },
   }),
 
-  app('temporal', {
+  app('temporal-server', {
     image: 'temporalio/auto-setup:1.29.1',
     labels: ['temporal'],
     portForwards: ['7233:7233', '7243:7243'],
@@ -35,12 +35,10 @@ export default [
     image: 'temporalio/ui:2.44.0',
     labels: ['temporal'],
     portForwards: ['8080'],
-    resourceDeps: ['temporal'],
+    resourceDeps: ['temporal-server'],
     probe: { type: 'http', path: '/', port: 8080 },
     env: {
-      TEMPORAL_ADDRESS: 'temporal:7233',
-      // Override K8s-injected TEMPORAL_PORT which conflicts with app config
-      TEMPORAL_PORT: '7233',
+      TEMPORAL_ADDRESS: 'temporal-server:7233',
     },
   }),
 ]

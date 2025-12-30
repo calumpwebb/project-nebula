@@ -14,5 +14,5 @@ export default app('nebula-worker', {
   },
   labels: ['nebula'],
   portForwards: ['8081:8080'],
-  resourceDeps: ['temporal'],
+  resourceDeps: ['temporal-server'],
 })
