@@ -66,7 +66,7 @@ function generateAppTilt(def: AppDefinition, appDir: string): string[] {
   }
 
   // K8s YAML
-  lines.push(`k8s_yaml('dist/${name}.yaml')`)
+  lines.push(`k8s_yaml('dist/${name}.k8s.yaml')`)
 
   // K8s resource config
   const resourceParts: string[] = [`  '${name}'`]
