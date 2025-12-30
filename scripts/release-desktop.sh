@@ -41,8 +41,8 @@ fi
 echo ""
 echo "Tag: $TAG"
 echo "Commit: $(git rev-parse --short HEAD)"
-read -p "Create and push? [y/N] " CONFIRM
-[ "$CONFIRM" = "y" ] || [ "$CONFIRM" = "Y" ] || exit 0
+read -p "Create and push? [Y/n] " CONFIRM
+[[ "$CONFIRM" =~ ^[nN]$ ]] && exit 0
 
 # Do it
 git tag "$TAG"
