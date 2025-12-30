@@ -92,6 +92,11 @@ jobs:
           hdiutil convert "$DMG_PATH" -format UDRW -o "$TEMP_DMG"
           hdiutil attach "$TEMP_DMG" -mountpoint "/Volumes/$VOLUME_NAME"
 
+          # Hide dotfiles using invisible attribute
+          SetFile -a V "/Volumes/$VOLUME_NAME/.VolumeIcon.icns" 2>/dev/null || true
+          SetFile -a V "/Volumes/$VOLUME_NAME/.fseventsd" 2>/dev/null || true
+          SetFile -a V "/Volumes/$VOLUME_NAME/.background" 2>/dev/null || true
+
           osascript <<EOF
           tell application "Finder"
             tell disk "$VOLUME_NAME"
@@ -100,8 +105,6 @@ jobs:
               set theViewOptions to the icon view options of container window
               set icon size of theViewOptions to 100
               set the bounds of container window to {400, 100, 1060, 500}
-              set position of item ".VolumeIcon.icns" to {1000, 1000}
-              set position of item ".fseventsd" to {1100, 1000}
               close
               open
               delay 2
