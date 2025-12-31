@@ -88,13 +88,18 @@ jobs:
           APP_PATH="apps/desktop/src-tauri/target/universal-apple-darwin/release/bundle/macos/Project Nebula.app"
           DMG_DIR="apps/desktop/src-tauri/target/universal-apple-darwin/release/bundle/dmg"
           mkdir -p "$DMG_DIR"
-          magick -size 600x400 xc:black /tmp/dmg-background.png
+          magick -size 600x400 xc:black \
+            -font Helvetica -fill white -pointsize 13 \
+            -draw "text 95,270 'Project Nebula'" \
+            -draw "text 405,270 'Applications'" \
+            /tmp/dmg-background.png
           create-dmg \
             --volname "Project Nebula" \
             --volicon "apps/desktop/src-tauri/icons/icon.icns" \
             --background /tmp/dmg-background.png \
             --window-size 600 400 \
             --icon-size 100 \
+            --hide-extension "Project Nebula.app" \
             --icon "Project Nebula.app" 150 200 \
             --app-drop-link 450 200 \
             "$DMG_DIR/Project Nebula_${VERSION}_universal.dmg" \
