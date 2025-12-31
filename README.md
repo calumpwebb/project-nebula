@@ -1,5 +1,8 @@
 # Project Nebula
 
+[![Download](https://img.shields.io/github/v/release/calumpwebb/project-nebula?label=Download&logo=github)](https://github.com/calumpwebb/project-nebula/releases/latest)
+[![Release](https://img.shields.io/github/actions/workflow/status/calumpwebb/project-nebula/release-desktop.yml?label=Release&logo=github-actions)](https://github.com/calumpwebb/project-nebula/actions/workflows/release-desktop.yml)
+
 Coming soon.
 
 ## Desktop Release Secrets
