@@ -90,6 +90,7 @@ jobs:
           APP_PATH="apps/desktop/src-tauri/target/aarch64-apple-darwin/release/bundle/macos/Nebula.app"
           DMG_DIR="apps/desktop/src-tauri/target/aarch64-apple-darwin/release/bundle/dmg"
           mkdir -p "$DMG_DIR"
+          rm -f "$DMG_DIR"/*.dmg
           magick -size 600x400 xc:black \
             -font Helvetica -fill white -pointsize 13 \
             -draw "text 95,270 'Nebula'" \
@@ -191,6 +192,7 @@ jobs:
           APP_PATH="apps/desktop/src-tauri/target/x86_64-apple-darwin/release/bundle/macos/Nebula.app"
           DMG_DIR="apps/desktop/src-tauri/target/x86_64-apple-darwin/release/bundle/dmg"
           mkdir -p "$DMG_DIR"
+          rm -f "$DMG_DIR"/*.dmg
           magick -size 600x400 xc:black \
             -font Helvetica -fill white -pointsize 13 \
             -draw "text 95,270 'Nebula'" \
