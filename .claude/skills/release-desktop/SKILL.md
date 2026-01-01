@@ -38,7 +38,7 @@ Apply these rules in order:
 
 1. **MAJOR** if any commit:
    - Has `BREAKING CHANGE:` in body
-   - Has exclamation mark after type, for example `feat(desktop)!:`
+   - Has exclamation mark after type (e.g. feat!, fix!)
 
 2. **MINOR** if any commit:
    - Type is `feat` with desktop-relevant scope
