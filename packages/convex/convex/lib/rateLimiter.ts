@@ -1,19 +1,20 @@
 import { RateLimiter } from "@convex-dev/rate-limiter";
 import { components } from "../_generated/api";
+import { getEnvironment } from "@nebula/shared";
 
 const MINUTE = 60 * 1000;
 const HOUR = 60 * MINUTE;
 
-// Check for dev environment
-const isDev = process.env.CONVEX_CLOUD_URL?.includes("localhost") ?? true;
+const env = getEnvironment();
+const isLocal = env === "local";
 
 export const rateLimiter = new RateLimiter(components.ratelimiter, {
   // Per-email signup attempts: 3/hour (relaxed in dev)
   signupPerEmail: {
     kind: "token bucket",
-    rate: isDev ? 100 : 3,
+    rate: isLocal ? 100 : 3,
     period: HOUR,
-    capacity: isDev ? 100 : 3,
+    capacity: isLocal ? 100 : 3,
   },
 
   // Per-email verification attempts: 5 then must resend
@@ -27,24 +28,24 @@ export const rateLimiter = new RateLimiter(components.ratelimiter, {
   // Global signup limit: 1000/hour
   signupGlobal: {
     kind: "token bucket",
-    rate: isDev ? 10000 : 1000,
+    rate: isLocal ? 10000 : 1000,
     period: HOUR,
-    capacity: isDev ? 10000 : 1000,
+    capacity: isLocal ? 10000 : 1000,
   },
 
   // Global email sending: 100/hour (bill protection)
   emailSendGlobal: {
     kind: "token bucket",
-    rate: isDev ? 1000 : 100,
+    rate: isLocal ? 1000 : 100,
     period: HOUR,
-    capacity: isDev ? 1000 : 100,
+    capacity: isLocal ? 1000 : 100,
   },
 
   // Per-email email sending: 5/hour
   emailSendPerAddress: {
     kind: "token bucket",
-    rate: isDev ? 50 : 5,
+    rate: isLocal ? 50 : 5,
     period: HOUR,
-    capacity: isDev ? 50 : 5,
+    capacity: isLocal ? 50 : 5,
   },
 });

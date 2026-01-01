@@ -1,9 +1,9 @@
 // packages/convex/convex/lib/email.ts
 
 import nodemailer from 'nodemailer'
+import { getEnvironment, Environment } from '@nebula/shared'
 
-// Dev environment check - Convex local backend uses localhost URL
-const isDev = process.env.CONVEX_CLOUD_URL?.includes('localhost') ?? true
+const env = getEnvironment()
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST ?? 'mailpit',
@@ -21,7 +21,7 @@ export async function sendEmail(
   subject: string,
   html: string
 ): Promise<void> {
-  if (!isDev) {
+  if (env === Environment.Production) {
     // TODO(NEBULA-c36): Integrate Resend for production
     throw new Error('Production email not configured - use Resend SDK')
   }
