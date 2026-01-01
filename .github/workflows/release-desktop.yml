@@ -93,6 +93,7 @@ jobs:
           rm -f "$DMG_DIR"/*.dmg
           create-dmg \
             --volname "Nebula" \
+            --volicon "apps/desktop/src-tauri/icons/icon.icns" \
             --window-size 600 400 \
             --icon-size 100 \
             --hide-extension "Nebula.app" \
@@ -188,6 +189,7 @@ jobs:
           rm -f "$DMG_DIR"/*.dmg
           create-dmg \
             --volname "Nebula" \
+            --volicon "apps/desktop/src-tauri/icons/icon.icns" \
             --window-size 600 400 \
             --icon-size 100 \
             --hide-extension "Nebula.app" \
