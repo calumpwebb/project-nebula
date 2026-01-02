@@ -1,13 +1,11 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
 
-export const Route = createFileRoute("/_public")({
+export const Route = createFileRoute('/_public')({
   beforeLoad: async ({ context }) => {
-    if (context.auth.isLoading) {
-      return;
-    }
-    if (context.auth.isAuthenticated) {
-      throw redirect({ to: "/" });
+    // Only redirect to dashboard if definitely authenticated (not loading)
+    if (!context.auth.isLoading && context.auth.isAuthenticated) {
+      throw redirect({ to: '/' })
     }
   },
   component: () => <Outlet />,
-});
+})

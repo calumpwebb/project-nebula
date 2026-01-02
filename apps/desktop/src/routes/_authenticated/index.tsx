@@ -1,18 +1,23 @@
-import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { authClient } from "../../lib/auth-client";
+import { createFileRoute, useRouter } from '@tanstack/react-router'
+import { authClient } from '../../lib/auth-client'
 
-export const Route = createFileRoute("/_authenticated/")({
+export const Route = createFileRoute('/_authenticated/')({
   component: Dashboard,
-});
+})
 
 function Dashboard() {
-  const { data: session } = authClient.useSession();
-  const router = useRouter();
+  const { data: session } = authClient.useSession()
+  const router = useRouter()
 
   const handleSignOut = async () => {
-    await authClient.signOut();
-    router.navigate({ to: "/login" });
-  };
+    try {
+      await authClient.signOut()
+      router.invalidate()
+      router.navigate({ to: '/login' })
+    } catch (error) {
+      console.error('Sign out failed:', error)
+    }
+  }
 
   return (
     <div className="flex-1 flex items-center justify-center">
@@ -27,5 +32,5 @@ function Dashboard() {
         </button>
       </div>
     </div>
-  );
+  )
 }
