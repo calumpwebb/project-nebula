@@ -3,8 +3,6 @@ mod updater;
 use tauri::menu::{MenuBuilder, MenuItemBuilder, SubmenuBuilder};
 use tauri_plugin_log::{Target, TargetKind};
 
-const VERSION: &str = env!("CARGO_PKG_VERSION");
-
 #[tauri::command]
 fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
@@ -25,7 +23,8 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(|app| {
-            log::info!("Nebula v{} starting...", VERSION);
+            let version = &app.package_info().version;
+            log::info!("Nebula v{} starting...", version);
 
             // Build the app menu with "Check for Updates"
             let check_updates =

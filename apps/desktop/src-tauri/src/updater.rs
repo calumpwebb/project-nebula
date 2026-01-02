@@ -1,8 +1,6 @@
 use log::{error, info};
-use tauri::AppHandle;
+use tauri::{AppHandle, Manager};
 use tauri_plugin_updater::UpdaterExt;
-
-const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 // Swift function declarations (macOS only)
 #[cfg(target_os = "macos")]
@@ -60,7 +58,7 @@ async fn do_update_check(
                 #[cfg(target_os = "macos")]
                 {
                     use swift_rs::SRString;
-                    let version: SRString = VERSION.into();
+                    let version: SRString = app.package_info().version.to_string().as_str().into();
                     unsafe { swift::show_up_to_date_dialog(&version) };
                 }
             }

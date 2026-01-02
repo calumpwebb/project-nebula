@@ -47,11 +47,10 @@ jobs:
         id: version
         run: echo "version=${GITHUB_REF#refs/tags/desktop-v}" >> $GITHUB_OUTPUT
 
-      - name: Update version in config files
+      - name: Update version in tauri.conf.json
         run: |
           cd apps/desktop/src-tauri
           sed -i '' 's/"version": "[^"]*"/"version": "${{ steps.version.outputs.version }}"/' tauri.conf.json
-          sed -i '' 's/^version = "[^"]*"/version = "${{ steps.version.outputs.version }}"/' Cargo.toml
 
       - name: Import Apple certificates
         if: ${{ env.APPLE_CERTIFICATE != '' }}
@@ -144,11 +143,10 @@ jobs:
         id: version
         run: echo "version=${GITHUB_REF#refs/tags/desktop-v}" >> $GITHUB_OUTPUT
 
-      - name: Update version in config files
+      - name: Update version in tauri.conf.json
         run: |
           cd apps/desktop/src-tauri
           sed -i '' 's/"version": "[^"]*"/"version": "${{ steps.version.outputs.version }}"/' tauri.conf.json
-          sed -i '' 's/^version = "[^"]*"/version = "${{ steps.version.outputs.version }}"/' Cargo.toml
 
       - name: Import Apple certificates
         if: ${{ env.APPLE_CERTIFICATE != '' }}
@@ -243,11 +241,10 @@ jobs:
         id: version
         run: echo "version=${GITHUB_REF#refs/tags/desktop-v}" >> $GITHUB_OUTPUT
 
-      - name: Update version in config files
+      - name: Update version in tauri.conf.json
         run: |
           cd apps/desktop/src-tauri
           sed -i 's/"version": "[^"]*"/"version": "${{ steps.version.outputs.version }}"/' tauri.conf.json
-          sed -i 's/^version = "[^"]*"/version = "${{ steps.version.outputs.version }}"/' Cargo.toml
 
       - name: Build Tauri app
         run: |
