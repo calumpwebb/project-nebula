@@ -13,10 +13,9 @@ function parse(value: string | undefined): Environment {
   return 'local' // Default to local for safety
 }
 
-/** Get the current environment. Checks ENVIRONMENT, falls back to VITE_ENVIRONMENT. */
+/** Get the current environment from process.env.ENVIRONMENT */
 export function getEnvironment(): Environment {
-  const value =
-    process.env.ENVIRONMENT ??
-    import.meta.env?.VITE_ENVIRONMENT
-  return parse(value)
+  // Note: For Vite apps, VITE_ENVIRONMENT is aliased to ENVIRONMENT at build time
+  // via vite.config.ts define option. This keeps the code universal.
+  return parse(process.env.ENVIRONMENT)
 }
