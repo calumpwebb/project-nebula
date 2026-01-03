@@ -352,10 +352,14 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           REPO="calumpwebb/nebula"
 
-          # Find the signature files (each arch has its own signature)
-          MAC_ARM64_SIG=$(cat artifacts/macos-arm64/*.app.tar.gz.sig 2>/dev/null || echo "")
-          MAC_X64_SIG=$(cat artifacts/macos-x64/*.app.tar.gz.sig 2>/dev/null || echo "")
-          LINUX_SIG=$(cat artifacts/linux/*.AppImage.tar.gz.sig 2>/dev/null || echo "")
+          # Debug: show artifact structure
+          echo "=== Artifact structure ==="
+          find artifacts -type f -name "*.sig" 2>/dev/null || echo "No .sig files found"
+
+          # Find the signature files recursively (download-artifact preserves directory structure)
+          MAC_ARM64_SIG=$(find artifacts/macos-arm64 -name "*.app.tar.gz.sig" -exec cat {} \; 2>/dev/null || echo "")
+          MAC_X64_SIG=$(find artifacts/macos-x64 -name "*.app.tar.gz.sig" -exec cat {} \; 2>/dev/null || echo "")
+          LINUX_SIG=$(find artifacts/linux -name "*.AppImage.tar.gz.sig" -exec cat {} \; 2>/dev/null || echo "")
 
           # Get first non-empty line from release notes for the manifest
           NOTES_SUMMARY=$(grep -v '^$' release_notes.md | head -1 | sed 's/^#* *//')
