@@ -4,7 +4,7 @@ import { app } from '../../../infra/lib'
 
 export default app('mailpit', {
   image: 'axllent/mailpit:latest',
-  labels: ['nebula'],
+  labels: ['mailpit'],
   portForwards: ['8025:8025'],
   probe: { type: 'http', path: '/livez', port: 8025 },
   env: {

@@ -58,6 +58,16 @@ export interface DockerfileAppConfig extends BaseConfig {
   probe?: ProbeConfig
 }
 
+/** Host path mount configuration */
+export interface HostPathConfig {
+  /** Path on the host */
+  hostPath: string
+  /** Mount path in container */
+  mountPath: string
+  /** Mount as read-only */
+  readOnly?: boolean
+}
+
 /** App using pre-built image */
 export interface ImageAppConfig extends BaseConfig {
   /** Container image (e.g., 'grafana/grafana:11') */
@@ -65,10 +75,16 @@ export interface ImageAppConfig extends BaseConfig {
   dockerfile?: never
   buildTarget?: never
   liveUpdate?: never
+  /** Workload kind (default: 'deployment') */
+  kind?: 'deployment' | 'daemonset'
   /** Environment variables */
   env?: Record<string, string>
+  /** Container command args (appended to entrypoint) */
+  args?: string[]
   /** Config files to mount: { mountPath: localPath } */
   configFiles?: Record<string, string>
+  /** Host paths to mount (for daemonsets) */
+  hostPaths?: HostPathConfig[]
   /** Expose via ingress */
   ingress?: boolean
   /** Port forwards for dev access */

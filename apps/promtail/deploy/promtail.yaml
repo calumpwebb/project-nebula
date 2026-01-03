@@ -1,0 +1,42 @@
+server:
+  http_listen_port: 3101
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: kubernetes-pods
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: kubernetes-pods
+          __path__: /var/log/pods/*/*/*.log
+
+    pipeline_stages:
+      # Extract container name and namespace from path
+      - regex:
+          expression: '/var/log/pods/(?P<namespace>[^_]+)_(?P<pod>[^_]+)_[^/]+/(?P<container>[^/]+)/.*\.log'
+      - labels:
+          namespace:
+          pod:
+          container:
+
+      # Try to parse JSON logs
+      - json:
+          expressions:
+            level: level
+            msg: msg
+          source: log
+
+      # Use extracted level as label if present
+      - labels:
+          level:
+
+      # Output the original log line
+      - output:
+          source: log
