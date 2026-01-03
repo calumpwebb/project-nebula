@@ -1,24 +1,24 @@
 module.exports = {
   root: true,
-  extends: ["eslint:recommended"],
+  extends: ['eslint:recommended'],
   parserOptions: {
-    ecmaVersion: "latest",
-    sourceType: "module",
+    ecmaVersion: 'latest',
+    sourceType: 'module',
   },
   env: {
     node: true,
     es2022: true,
   },
   rules: {
-    "no-restricted-imports": [
-      "error",
+    'no-restricted-imports': [
+      'error',
       {
         paths: [
           {
-            name: "./_generated/server",
-            importNames: ["query", "mutation", "action"],
+            name: './_generated/server',
+            importNames: ['query', 'mutation', 'action'],
             message:
-              "Import from './lib/functions' instead. Use publicQuery/publicMutation/publicAction for unauthenticated endpoints.",
+              "Import from './functions' instead. Use skipAuth: true for unauthenticated endpoints.",
           },
         ],
       },
@@ -26,8 +26,8 @@ module.exports = {
   },
   overrides: [
     {
-      files: ["*.ts"],
-      parser: "@typescript-eslint/parser",
+      files: ['*.ts'],
+      parser: '@typescript-eslint/parser',
     },
   ],
-};
+}

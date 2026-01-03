@@ -1,5 +1,3 @@
-/// <reference path="./env.d.ts" />
-
 export type Environment = 'local' | 'production'
 
 // Const object for autocompletion

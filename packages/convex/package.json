@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@convex-dev/rate-limiter": "^0.3.2",
+    "@types/node": "^20.0.0",
     "typescript": "^5.7.2"
   }
 }

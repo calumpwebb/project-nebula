@@ -1,12 +1,11 @@
 /**
- * Middleware-wrapped Convex builders
+ * Custom Convex function builders with auth middleware.
  *
- * Use these instead of importing from _generated/server directly.
- * ESLint will enforce this.
+ * Import from here instead of _generated/server. ESLint enforces this.
  *
  * Usage:
- *   query({ args: {}, handler: (ctx) => ctx.user })           // ctx.user: User
- *   query({ skipAuth: true, args: {}, handler: (ctx) => {} }) // ctx.user: null
+ *   query({ args: {}, handler: (ctx) => ctx.user })           // ctx.user: User (authenticated)
+ *   query({ skipAuth: true, args: {}, handler: (ctx) => {} }) // ctx.user: null (public)
  */
 
 /* eslint-disable no-restricted-imports */
@@ -20,10 +19,10 @@ import {
   internalQuery as baseInternalQuery,
   internalMutation as baseInternalMutation,
   internalAction as baseInternalAction,
-} from '../_generated/server'
+} from './_generated/server'
 /* eslint-enable no-restricted-imports */
-import type { DataModel } from '../_generated/dataModel'
-import { authComponent } from '../features/auth'
+import type { DataModel } from './_generated/dataModel'
+import { authComponent } from './features/auth'
 
 // ---- Types ----
 
