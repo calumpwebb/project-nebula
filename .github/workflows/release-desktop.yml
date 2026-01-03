@@ -7,7 +7,7 @@ on:
       - 'desktop-v*'
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: release-desktop
   cancel-in-progress: true
 
 env:
