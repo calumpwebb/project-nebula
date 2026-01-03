@@ -65,7 +65,7 @@ export function Toast({ toast, onDismiss }: ToastProps) {
     <div
       onClick={handleDismiss}
       className={`
-        px-4 py-2 border bg-gray-900/95 backdrop-blur-sm cursor-pointer
+        px-4 py-2 border bg-black cursor-pointer
         font-mono text-sm select-none
         transition-all duration-200 ease-out
         ${styles.border}
