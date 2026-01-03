@@ -7,6 +7,9 @@ export function TerminalInput({
   onChange,
   placeholder,
   autoFocus,
+  autoComplete,
+  name,
+  id,
 }: {
   label: string
   type?: string
@@ -14,6 +17,9 @@ export function TerminalInput({
   onChange: (value: string) => void
   placeholder?: string
   autoFocus?: boolean
+  autoComplete?: string
+  name?: string
+  id?: string
 }) {
   const [capsLock, setCapsLock] = useState(false)
   const [isFocused, setIsFocused] = useState(false)
@@ -37,6 +43,9 @@ export function TerminalInput({
           onBlur={() => setIsFocused(false)}
           placeholder={placeholder}
           autoFocus={autoFocus}
+          autoComplete={autoComplete}
+          name={name}
+          id={id}
           className="flex-1 min-w-0 bg-transparent border-none outline-none text-gray-200 placeholder:text-gray-700"
         />
         {showCapsLockIndicator && (

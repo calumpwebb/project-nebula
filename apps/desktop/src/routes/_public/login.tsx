@@ -30,8 +30,8 @@ function LoginPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [name, setName] = useState('')
   const [isVerifying, setIsVerifying] = useState(false)
-  // _resetCodeSent will be used in forgot-password-otp screen (next task)
   const [_resetCodeSent, setResetCodeSent] = useState(false)
+  const [_verifiedOtp, setVerifiedOtp] = useState('')
 
   // Navigate to dashboard when session becomes available
   useEffect(() => {
@@ -140,6 +140,34 @@ function LoginPage() {
     }
   }
 
+  const handleResendResetCode = async () => {
+    try {
+      const result = await authClient.emailOtp.sendVerificationOtp({
+        email,
+        type: 'forget-password',
+      })
+      if (result.error) {
+        toast.error(result.error.message || 'failed to send reset code')
+      } else {
+        toast.success('reset code sent')
+      }
+    } catch {
+      toast.error('failed to send reset code')
+    }
+  }
+
+  const handleVerifyResetCode = async (otp: string) => {
+    if (otp.length !== 6) {
+      toast.error('please enter a 6-digit code')
+      return
+    }
+
+    // Store OTP and move to password reset screen
+    // The actual verification happens when we reset the password
+    setVerifiedOtp(otp)
+    setMode('forgot-password-reset')
+  }
+
   // Verify email mode
   if (mode === 'verify-email') {
     return (
@@ -158,7 +186,7 @@ function LoginPage() {
   if (mode === 'forgot-password-email') {
     return (
       <div className="text-sm w-[380px]">
-        <form onSubmit={handleForgotPasswordSubmit} noValidate className="p-6">
+        <form onSubmit={handleForgotPasswordSubmit} noValidate autoComplete="on" className="p-6">
           <div className="flex justify-center mb-6">
             <NebulaLogo />
           </div>
@@ -168,7 +196,15 @@ function LoginPage() {
             enter your email to receive a reset code
           </div>
 
-          <TerminalInput label="email" value={email} onChange={setEmail} autoFocus />
+          <TerminalInput
+            label="email"
+            value={email}
+            onChange={setEmail}
+            autoFocus
+            autoComplete="username"
+            name="email"
+            id="email"
+          />
 
           <div className="mt-4 space-y-2">
             <TerminalButton type="submit" variant="primary">
@@ -190,10 +226,28 @@ function LoginPage() {
     )
   }
 
+  // Forgot password - OTP entry
+  if (mode === 'forgot-password-otp') {
+    return (
+      <OtpVerificationScreen
+        email={email}
+        description="reset code sent to"
+        onVerify={handleVerifyResetCode}
+        onResend={handleResendResetCode}
+        onBack={() => {
+          setMode('forgot-password-email')
+          setVerifiedOtp('')
+        }}
+        isVerifying={false}
+        verifyButtonText="[ verify code ]"
+      />
+    )
+  }
+
   // Sign-in / Sign-up form
   return (
     <div className="text-sm w-[380px]">
-      <form onSubmit={handleSubmit} noValidate className="p-6">
+      <form onSubmit={handleSubmit} noValidate autoComplete="on" className="p-6">
         <div className="flex justify-center mb-6">
           <NebulaLogo />
         </div>
@@ -203,11 +257,36 @@ function LoginPage() {
           {mode === 'sign-up' ? 'create_account' : 'sign_in'}
         </div>
 
-        {mode === 'sign-up' && <TerminalInput label="name" value={name} onChange={setName} />}
+        {mode === 'sign-up' && (
+          <TerminalInput
+            label="name"
+            value={name}
+            onChange={setName}
+            autoComplete="name"
+            name="name"
+            id="name"
+          />
+        )}
 
-        <TerminalInput label="email" value={email} onChange={setEmail} autoFocus />
+        <TerminalInput
+          label="email"
+          value={email}
+          onChange={setEmail}
+          autoFocus
+          autoComplete="username"
+          name="email"
+          id="email"
+        />
 
-        <TerminalInput label="password" type="password" value={password} onChange={setPassword} />
+        <TerminalInput
+          label="password"
+          type="password"
+          value={password}
+          onChange={setPassword}
+          autoComplete={mode === 'sign-up' ? 'new-password' : 'current-password'}
+          name="password"
+          id="password"
+        />
 
         {mode === 'sign-up' && (
           <TerminalInput
@@ -215,6 +294,9 @@ function LoginPage() {
             type="password"
             value={confirmPassword}
             onChange={setConfirmPassword}
+            autoComplete="new-password"
+            name="confirmPassword"
+            id="confirmPassword"
           />
         )}
 

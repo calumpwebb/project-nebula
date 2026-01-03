@@ -12,7 +12,7 @@ export function TerminalButton({
   variant?: 'primary' | 'secondary' | 'link'
 }) {
   const baseStyles =
-    'w-full py-1.5 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+    'w-full py-1.5 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none'
   const variants = {
     primary:
       'text-primary border border-primary hover:bg-primary hover:text-background focus:bg-primary focus:text-background',
