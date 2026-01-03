@@ -6,6 +6,76 @@ export const Route = createFileRoute('/_public/login')({
   component: LoginPage,
 })
 
+const NEBULA_LOGO = `███╗   ██╗███████╗██████╗ ██╗   ██╗██╗      █████╗
+████╗  ██║██╔════╝██╔══██╗██║   ██║██║     ██╔══██╗
+██╔██╗ ██║█████╗  ██████╔╝██║   ██║██║     ███████║
+██║╚██╗██║██╔══╝  ██╔══██╗██║   ██║██║     ██╔══██║
+██║ ╚████║███████╗██████╔╝╚██████╔╝███████╗██║  ██║
+╚═╝  ╚═══╝╚══════╝╚═════╝  ╚═════╝ ╚══════╝╚═╝  ╚═╝`
+
+function TerminalInput({
+  label,
+  type = 'text',
+  value,
+  onChange,
+  placeholder,
+  autoFocus,
+}: {
+  label: string
+  type?: string
+  value: string
+  onChange: (value: string) => void
+  placeholder?: string
+  autoFocus?: boolean
+}) {
+  return (
+    <div className="flex items-center gap-2 mb-2">
+      <span className="text-white font-bold shrink-0">{label}:</span>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        autoFocus={autoFocus}
+        className="flex-1 bg-transparent border-none outline-none text-gray-200 placeholder:text-gray-700"
+      />
+    </div>
+  )
+}
+
+function TerminalButton({
+  children,
+  onClick,
+  type = 'button',
+  disabled,
+  variant = 'primary',
+}: {
+  children: React.ReactNode
+  onClick?: () => void
+  type?: 'button' | 'submit'
+  disabled?: boolean
+  variant?: 'primary' | 'secondary' | 'link'
+}) {
+  const baseStyles =
+    'w-full py-1.5 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+  const variants = {
+    primary: 'text-white hover:text-gray-300 border border-gray-600 hover:border-gray-500',
+    secondary: 'text-gray-500 hover:text-gray-400 border border-gray-700 hover:border-gray-600',
+    link: 'text-gray-600 hover:text-gray-400 border-none',
+  }
+
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className={`${baseStyles} ${variants[variant]}`}
+    >
+      {children}
+    </button>
+  )
+}
+
 function LoginPage() {
   const navigate = useNavigate()
   const { data: session } = authClient.useSession()
@@ -62,6 +132,8 @@ function LoginPage() {
           if (result.error.status === 403) {
             setError('Please verify your email before signing in')
             setPendingVerification(true)
+          } else if (result.error.status === 401 || result.error.status === 400) {
+            setError('incorrect email or password')
           } else {
             setError(result.error.message || 'Sign in failed')
           }
@@ -119,120 +191,110 @@ function LoginPage() {
 
   if (pendingVerification) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <div className="w-80 text-white">
-          <h1 className="text-2xl mb-4 text-center">Enter Verification Code</h1>
-          <p className="text-neutral-400 mb-4 text-center">We sent a 6-digit code to {email}</p>
+      <div className="text-sm w-[380px]">
+        <div className="p-6">
+          <div className="flex justify-center mb-6">
+            <pre className="text-white text-[10px] leading-none select-none">{NEBULA_LOGO}</pre>
+          </div>
+
+          <div className="text-white mb-4">
+            <span className="text-gray-400">// </span>
+            verification code sent to {email}
+          </div>
 
           {error && (
-            <div className="mb-4 p-2 bg-red-900/50 border border-red-500 rounded text-red-200 text-sm">
+            <div className="mb-4 text-red-400">
+              <span className="text-red-600">error: </span>
               {error}
             </div>
           )}
 
-          <input
-            type="text"
-            placeholder="000000"
-            value={otp}
-            onChange={(e) => {
-              const value = e.target.value.replace(/\D/g, '').slice(0, 6)
-              setOtp(value)
-            }}
-            className="w-full mb-4 px-3 py-3 bg-black border border-neutral-800 rounded text-white text-center text-2xl tracking-widest"
-            maxLength={6}
-            autoFocus
-          />
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-white font-bold">code:</span>
+            <input
+              type="text"
+              value={otp}
+              onChange={(e) => {
+                const value = e.target.value.replace(/\D/g, '').slice(0, 6)
+                setOtp(value)
+              }}
+              placeholder="______"
+              maxLength={6}
+              autoFocus
+              className="flex-1 bg-transparent border-none outline-none text-gray-200 tracking-widest placeholder:text-gray-700"
+            />
+          </div>
 
-          <button
-            onClick={handleVerifyOtp}
-            disabled={otp.length !== 6 || isVerifying}
-            className="w-full py-2 bg-blue-600 rounded hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isVerifying ? 'Verifying...' : 'Verify'}
-          </button>
+          <div className="space-y-2">
+            <TerminalButton
+              onClick={handleVerifyOtp}
+              disabled={otp.length !== 6 || isVerifying}
+              variant="primary"
+            >
+              {isVerifying ? '[ verifying... ]' : '[ verify ]'}
+            </TerminalButton>
 
-          <button
-            onClick={handleResendVerification}
-            disabled={countdown > 0}
-            className="w-full py-2 mt-3 bg-neutral-800 rounded hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {countdown > 0 ? `Resend code in ${countdown}s` : 'Resend Code'}
-          </button>
+            <TerminalButton
+              onClick={handleResendVerification}
+              disabled={countdown > 0}
+              variant="secondary"
+            >
+              {countdown > 0 ? `[ resend in ${countdown}s ]` : '[ resend code ]'}
+            </TerminalButton>
 
-          <button
-            onClick={() => {
-              setPendingVerification(false)
-              setOtp('')
-              setCountdown(30)
-              setError('')
-            }}
-            className="w-full py-2 mt-2 text-neutral-400 hover:text-white"
-          >
-            Back to Login
-          </button>
+            <TerminalButton
+              onClick={() => {
+                setPendingVerification(false)
+                setOtp('')
+                setCountdown(30)
+                setError('')
+              }}
+              variant="link"
+            >
+              {'<'} back
+            </TerminalButton>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="flex-1 flex items-center justify-center">
-      <form onSubmit={handleSubmit} className="w-80">
-        <h1 className="text-2xl text-white mb-6 text-center">
-          {isSignUp ? 'Create Account' : 'Sign In'}
-        </h1>
+    <div className="text-sm w-[380px]">
+      <form onSubmit={handleSubmit} noValidate className="p-6">
+        <div className="flex justify-center mb-6">
+          <pre className="text-white text-[10px] leading-none select-none">{NEBULA_LOGO}</pre>
+        </div>
+
+        <div className="text-white mb-4">
+          <span className="text-gray-400">$ </span>
+          {isSignUp ? 'create_account' : 'sign_in'}
+        </div>
 
         {error && (
-          <div className="mb-4 p-2 bg-red-900/50 border border-red-500 rounded text-red-200 text-sm">
+          <div className="mb-4 text-red-400">
+            <span className="text-red-600">error: </span>
             {error}
           </div>
         )}
 
-        {isSignUp && (
-          <input
-            type="text"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full mb-3 px-3 py-2 bg-black border border-neutral-800 rounded text-white"
-            required
-          />
-        )}
+        {isSignUp && <TerminalInput label="name" value={name} onChange={setName} />}
 
         {/* TODO(NEBULA-52o): Restore type="email" for validation */}
-        <input
-          type="text"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full mb-3 px-3 py-2 bg-black border border-neutral-800 rounded text-white"
-          required
-        />
+        <TerminalInput label="email" value={email} onChange={setEmail} autoFocus />
 
         {/* TODO(NEBULA-52o): Restore minLength={8} for validation */}
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full mb-4 px-3 py-2 bg-black border border-neutral-800 rounded text-white"
-          required
-        />
+        <TerminalInput label="password" type="password" value={password} onChange={setPassword} />
 
-        <button
-          type="submit"
-          className="w-full py-2 bg-blue-600 rounded hover:bg-blue-700 text-white"
-        >
-          {isSignUp ? 'Sign Up' : 'Sign In'}
-        </button>
+        <div className="mt-4 space-y-2">
+          <TerminalButton type="submit" variant="primary">
+            {isSignUp ? '[ create account ]' : '[ sign in ]'}
+          </TerminalButton>
 
-        <button
-          type="button"
-          onClick={() => setIsSignUp(!isSignUp)}
-          className="w-full py-2 mt-3 text-neutral-400 hover:text-white"
-        >
-          {isSignUp ? 'Already have an account? Sign In' : 'Need an account? Sign Up'}
-        </button>
+          <TerminalButton onClick={() => setIsSignUp(!isSignUp)} variant="link">
+            {isSignUp ? '< already have account' : '> create new account'}
+          </TerminalButton>
+        </div>
       </form>
     </div>
   )
