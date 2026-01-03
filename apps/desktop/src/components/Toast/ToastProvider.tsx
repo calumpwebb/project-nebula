@@ -57,12 +57,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       {createPortal(
         <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-auto">
-          {visibleToasts.map((t) => (
-            <Toast key={t.id} toast={t} onDismiss={dismissToast} />
-          ))}
           {queuedCount > 0 && (
             <div className="text-center text-gray-500 font-mono text-xs">+{queuedCount} more</div>
           )}
+          {visibleToasts.map((t) => (
+            <Toast key={t.id} toast={t} onDismiss={dismissToast} />
+          ))}
         </div>,
         document.body
       )}
