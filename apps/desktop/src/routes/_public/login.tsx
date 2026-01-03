@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useRouter } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { authClient } from '../../lib/auth-client'
 
@@ -7,6 +7,7 @@ export const Route = createFileRoute('/_public/login')({
 })
 
 function LoginPage() {
+  const router = useRouter()
   const [isSignUp, setIsSignUp] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -56,6 +57,9 @@ function LoginPage() {
           } else {
             setError(result.error.message || 'Sign in failed')
           }
+        } else {
+          // Session updated - invalidate router to trigger beforeLoad redirect
+          await router.invalidate()
         }
       }
     } catch {
@@ -98,8 +102,10 @@ function LoginPage() {
       })
       if (result.error) {
         setError(result.error.message || 'Invalid verification code')
+      } else {
+        // Session updated - invalidate router to trigger beforeLoad redirect
+        await router.invalidate()
       }
-      // On success, better-auth will handle the session
     } catch {
       setError('Verification failed')
     } finally {
