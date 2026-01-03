@@ -85,32 +85,39 @@ private func stopObservingActivation() {
 private func createUpdatePanel(title: String, width: CGFloat = 320, height: CGFloat = 80) -> (NSPanel, NSTextField, NSProgressIndicator) {
     let panel = NSPanel(
         contentRect: NSRect(x: 0, y: 0, width: width, height: height),
-        styleMask: [.titled, .fullSizeContentView],
+        styleMask: [.borderless],
         backing: .buffered,
         defer: false
     )
-    panel.title = title
-    panel.titlebarAppearsTransparent = true
+    panel.backgroundColor = .clear
+    panel.isOpaque = false
+    panel.hasShadow = true
     panel.isMovableByWindowBackground = true
     panel.level = .modalPanel
     panel.hidesOnDeactivate = false  // Keep visible when switching apps
     panel.center()
 
-    let contentView = NSView(frame: panel.contentView!.bounds)
+    // Rounded background
+    let contentView = NSVisualEffectView(frame: NSRect(origin: .zero, size: NSSize(width: width, height: height)))
+    contentView.material = .popover
+    contentView.state = .active
+    contentView.wantsLayer = true
+    contentView.layer?.cornerRadius = 12
+    contentView.layer?.masksToBounds = true
 
-    // Icon
-    let iconView = NSImageView(frame: NSRect(x: 20, y: 15, width: 40, height: 40))
+    // Icon (vertically centered in 80px: (80-40)/2 = 20)
+    let iconView = NSImageView(frame: NSRect(x: 20, y: 20, width: 40, height: 40))
     iconView.image = getAppIcon()
     contentView.addSubview(iconView)
 
     // Label
     let label = NSTextField(labelWithString: "")
-    label.frame = NSRect(x: 70, y: 28, width: width - 90, height: 20)
+    label.frame = NSRect(x: 70, y: 38, width: width - 90, height: 20)
     label.font = NSFont.systemFont(ofSize: 13, weight: .medium)
     contentView.addSubview(label)
 
     // Progress bar
-    let progress = NSProgressIndicator(frame: NSRect(x: 70, y: 12, width: width - 90, height: 12))
+    let progress = NSProgressIndicator(frame: NSRect(x: 70, y: 20, width: width - 90, height: 12))
     progress.style = .bar
     contentView.addSubview(progress)
 
