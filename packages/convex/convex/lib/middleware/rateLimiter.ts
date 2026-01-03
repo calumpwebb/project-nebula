@@ -1,5 +1,5 @@
 import { RateLimiter } from '@convex-dev/rate-limiter'
-import { components } from '../_generated/api'
+import { components } from '../../_generated/api'
 import { getEnvironment } from '@nebula/shared'
 
 const MINUTE = 60 * 1000
