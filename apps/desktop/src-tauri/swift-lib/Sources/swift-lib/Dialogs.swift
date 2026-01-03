@@ -58,6 +58,28 @@ private func enableAppWindows() {
 private var updatePanel: NSPanel?
 private var progressBar: NSProgressIndicator?
 private var statusLabel: NSTextField?
+private var activationObserver: NSObjectProtocol?
+
+/// Observe app activation to bring panel to front (fixes Mission Control click-through)
+private func startObservingActivation() {
+    guard activationObserver == nil else { return }
+    activationObserver = NotificationCenter.default.addObserver(
+        forName: NSApplication.didBecomeActiveNotification,
+        object: nil,
+        queue: .main
+    ) { _ in
+        if let panel = updatePanel {
+            panel.makeKeyAndOrderFront(nil)
+        }
+    }
+}
+
+private func stopObservingActivation() {
+    if let observer = activationObserver {
+        NotificationCenter.default.removeObserver(observer)
+        activationObserver = nil
+    }
+}
 
 /// Create a modal-style panel
 private func createUpdatePanel(title: String, width: CGFloat = 320, height: CGFloat = 80) -> (NSPanel, NSTextField, NSProgressIndicator) {
@@ -71,6 +93,7 @@ private func createUpdatePanel(title: String, width: CGFloat = 320, height: CGFl
     panel.titlebarAppearsTransparent = true
     panel.isMovableByWindowBackground = true
     panel.level = .modalPanel
+    panel.hidesOnDeactivate = false  // Keep visible when switching apps
     panel.center()
 
     let contentView = NSView(frame: panel.contentView!.bounds)
@@ -100,12 +123,14 @@ private func createUpdatePanel(title: String, width: CGFloat = 320, height: CGFl
 public func showCheckingDialog() {
     DispatchQueue.main.sync {
         disableAppWindows()
+        startObservingActivation()
 
         let (panel, label, progress) = createUpdatePanel(title: "")
         label.stringValue = "Checking for updates..."
         progress.isIndeterminate = true
         progress.startAnimation(nil)
 
+        NSApp.activate(ignoringOtherApps: true)
         panel.makeKeyAndOrderFront(nil)
 
         updatePanel = panel
@@ -118,6 +143,7 @@ public func showCheckingDialog() {
 @_cdecl("dismiss_update_panel")
 public func dismissUpdatePanel() {
     DispatchQueue.main.sync {
+        stopObservingActivation()
         progressBar?.stopAnimation(nil)
         updatePanel?.close()
         updatePanel = nil
@@ -133,6 +159,7 @@ public func dismissUpdatePanel() {
 public func showDownloadDialog() {
     DispatchQueue.main.sync {
         disableAppWindows()
+        startObservingActivation()
 
         let (panel, label, progress) = createUpdatePanel(title: "")
         label.stringValue = "Downloading update..."
@@ -141,6 +168,7 @@ public func showDownloadDialog() {
         progress.maxValue = 100
         progress.doubleValue = 0
 
+        NSApp.activate(ignoringOtherApps: true)
         panel.makeKeyAndOrderFront(nil)
 
         updatePanel = panel
