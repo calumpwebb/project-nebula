@@ -28,15 +28,14 @@
   },
   "plugins": {
     "updater": {
-      "endpoints": [
-        "https://github.com/calumpwebb/nebula/releases/latest/download/latest.json"
-      ],
+      "endpoints": ["https://github.com/calumpwebb/nebula/releases/latest/download/latest.json"],
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDVGQzBDRUVGRjY2NUMwNkMKUldSc3dHWDI3ODdBWDhpNDd3Mm8ycHBFNnJ1cGlGWGxZVGwvUjdRQ2srckdLSzFkc2FsN3huQWoK"
     }
   },
   "bundle": {
     "active": true,
     "targets": "all",
+    "createUpdaterArtifacts": true,
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
