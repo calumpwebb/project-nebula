@@ -99,12 +99,7 @@ export type ServerMiddleware = {
 /**
  * Result of building middleware from a config.
  */
-export type BuiltMiddleware<
-  TInject extends object = object,
-  _TExtract = unknown,
-  _TCtxAdditions extends object = Record<string, never>,
-  _TStrip extends string = never,
-> = {
+export type BuiltMiddleware<TInject extends object = object> = {
   server: ServerMiddleware | null
   client: ClientMiddleware<TInject> | null
 }
@@ -244,9 +239,7 @@ export function buildMiddleware<
   TExtract = unknown,
   TCtxAdditions extends object = Record<string, never>,
   TStrip extends string = never,
->(
-  config: MiddlewareConfig<TInject, TExtract, TCtxAdditions, TStrip>
-): BuiltMiddleware<TInject, TExtract, TCtxAdditions, TStrip> {
+>(config: MiddlewareConfig<TInject, TExtract, TCtxAdditions, TStrip>): BuiltMiddleware<TInject> {
   return {
     server: config.server ? buildServerMiddleware(config) : null,
     client: config.client ? buildClientMiddleware(config) : null,
