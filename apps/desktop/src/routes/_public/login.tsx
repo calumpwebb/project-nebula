@@ -30,6 +30,8 @@ function LoginPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [name, setName] = useState('')
   const [isVerifying, setIsVerifying] = useState(false)
+  // _resetCodeSent will be used in forgot-password-otp screen (next task)
+  const [_resetCodeSent, setResetCodeSent] = useState(false)
 
   // Navigate to dashboard when session becomes available
   useEffect(() => {
@@ -118,6 +120,26 @@ function LoginPage() {
     }
   }
 
+  const handleForgotPasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    try {
+      await authClient.emailOtp.sendVerificationOtp({
+        email,
+        type: 'forget-password',
+      })
+      // Always show success (security - don't reveal if account exists)
+      toast.success('if this email exists, we sent a reset code')
+      setResetCodeSent(true)
+      setMode('forgot-password-otp')
+    } catch {
+      // Still show success message for security
+      toast.success('if this email exists, we sent a reset code')
+      setResetCodeSent(true)
+      setMode('forgot-password-otp')
+    }
+  }
+
   // Verify email mode
   if (mode === 'verify-email') {
     return (
@@ -129,6 +151,42 @@ function LoginPage() {
         onBack={() => setMode('sign-in')}
         isVerifying={isVerifying}
       />
+    )
+  }
+
+  // Forgot password - email entry
+  if (mode === 'forgot-password-email') {
+    return (
+      <div className="text-sm w-[380px]">
+        <form onSubmit={handleForgotPasswordSubmit} noValidate className="p-6">
+          <div className="flex justify-center mb-6">
+            <NebulaLogo />
+          </div>
+
+          <div className="text-white mb-4">
+            <span className="text-gray-400">// </span>
+            enter your email to receive a reset code
+          </div>
+
+          <TerminalInput label="email" value={email} onChange={setEmail} autoFocus />
+
+          <div className="mt-4 space-y-2">
+            <TerminalButton type="submit" variant="primary">
+              [ send reset code ]
+            </TerminalButton>
+
+            <TerminalButton
+              onClick={() => {
+                setMode('sign-in')
+                setResetCodeSent(false)
+              }}
+              variant="link"
+            >
+              {'<'} back to sign in
+            </TerminalButton>
+          </div>
+        </form>
+      </div>
     )
   }
 
