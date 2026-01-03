@@ -189,6 +189,7 @@ function LoginPage() {
           />
         )}
 
+        {/* TODO(NEBULA-52o): Restore type="email" for validation */}
         <input
           type="text"
           placeholder="Email"
@@ -198,6 +199,7 @@ function LoginPage() {
           required
         />
 
+        {/* TODO(NEBULA-52o): Restore minLength={8} for validation */}
         <input
           type="password"
           placeholder="Password"

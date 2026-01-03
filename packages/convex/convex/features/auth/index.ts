@@ -20,6 +20,7 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
     emailAndPassword: {
       enabled: true,
       requireEmailVerification: true,
+      // TODO(NEBULA-52o): Restore minPasswordLength to 8
       minPasswordLength: 1,
       maxPasswordLength: 128,
       // TODO(NEBULA-c36): Integrate Resend for real email delivery

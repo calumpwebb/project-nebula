@@ -1,6 +1,5 @@
 import eslint from '@eslint/js'
 import tseslint from 'typescript-eslint'
-import nebulaPlugin from './packages/eslint-plugin-nebula/src/index.js'
 
 export default tseslint.config(
   eslint.configs.recommended,
@@ -16,9 +15,6 @@ export default tseslint.config(
     ],
   },
   {
-    plugins: {
-      nebula: nebulaPlugin,
-    },
     rules: {
       '@typescript-eslint/no-unused-vars': [
         'error',
