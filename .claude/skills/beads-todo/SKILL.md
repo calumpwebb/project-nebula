@@ -1,8 +1,6 @@
 ---
 name: beads-todo
 description: Create todos in beads with smart semantic duplicate detection - prevents creating todos that match existing ones even when worded differently
-metadata:
-  version: 1.0.0
 ---
 
 # Beads Todo Creator
@@ -11,10 +9,10 @@ Create todos in beads (bd) with intelligent duplicate detection that catches sem
 
 ## Relationship to `bd duplicates`
 
-| Tool | Detection Type | Use When |
-|------|---------------|----------|
-| `bd duplicates` | Exact content hash | Identical issues (copy-paste duplicates) |
-| This skill | Semantic similarity | Different wording, same intent |
+| Tool            | Detection Type      | Use When                                 |
+| --------------- | ------------------- | ---------------------------------------- |
+| `bd duplicates` | Exact content hash  | Identical issues (copy-paste duplicates) |
+| This skill      | Semantic similarity | Different wording, same intent           |
 
 The built-in `bd duplicates` command finds issues with identical content hashes. This skill complements it by catching semantically equivalent issues that are worded differently (e.g., "add tests for auth" vs "write authentication tests").
 
@@ -28,12 +26,12 @@ The built-in `bd duplicates` command finds issues with identical content hashes.
 
 ## Quick Reference
 
-| Step | Action |
-|------|--------|
-| 1 | Fetch existing open/in_progress/blocked issues via `bd list` |
-| 2 | Semantically compare proposed todo against all existing |
-| 3 | Report matches with similarity reasoning |
-| 4 | Create only if no duplicates (or user confirms) |
+| Step | Action                                                       |
+| ---- | ------------------------------------------------------------ |
+| 1    | Fetch existing open/in_progress/blocked issues via `bd list` |
+| 2    | Semantically compare proposed todo against all existing      |
+| 3    | Report matches with similarity reasoning                     |
+| 4    | Create only if no duplicates (or user confirms)              |
 
 ## Process
 
@@ -48,6 +46,7 @@ bd list --status blocked --json
 ```
 
 Parse each JSON output and merge the results. Each issue has:
+
 - `id`: Issue identifier (e.g., NEBULA-abc)
 - `title`: Issue title
 - `description`: Detailed description
@@ -55,6 +54,7 @@ Parse each JSON output and merge the results. Each issue has:
 - `issue_type`: bug, feature, task, epic, chore
 
 **Why these statuses?**
+
 - `open`: Work not yet started - most likely to conflict
 - `in_progress`: Active work - definitely relevant
 - `blocked`: Paused but not abandoned - still counts as active
@@ -67,30 +67,30 @@ For each existing issue, evaluate semantic similarity to the proposed todo.
 
 **Similarity Criteria:**
 
-| Aspect | Weight | Description |
-|--------|--------|-------------|
-| Core Intent | High | Does it solve the same problem? |
-| Action Type | Medium | Same verb category (add/create, fix/repair, update/modify)? |
-| Target Entity | High | Same component/feature/area? |
-| Scope | Medium | Similar scope of work? |
+| Aspect        | Weight | Description                                                 |
+| ------------- | ------ | ----------------------------------------------------------- |
+| Core Intent   | High   | Does it solve the same problem?                             |
+| Action Type   | Medium | Same verb category (add/create, fix/repair, update/modify)? |
+| Target Entity | High   | Same component/feature/area?                                |
+| Scope         | Medium | Similar scope of work?                                      |
 
 **Similarity Levels:**
 
-| Level | Score | Action |
-|-------|-------|--------|
-| Exact Match | 90-100% | Block creation, show existing |
-| High Similarity | 70-89% | Warn user, require confirmation |
-| Moderate Similarity | 50-69% | Inform user, proceed with caution |
-| Low Similarity | <50% | Proceed with creation |
+| Level               | Score   | Action                            |
+| ------------------- | ------- | --------------------------------- |
+| Exact Match         | 90-100% | Block creation, show existing     |
+| High Similarity     | 70-89%  | Warn user, require confirmation   |
+| Moderate Similarity | 50-69%  | Inform user, proceed with caution |
+| Low Similarity      | <50%    | Proceed with creation             |
 
 ### Why These Thresholds?
 
-| Threshold | Rationale |
-|-----------|-----------|
-| **90%+** | Near-certain duplicate. Different wording but same task. Default to blocking - false positives here are rare and easy to override. |
+| Threshold  | Rationale                                                                                                                                |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| **90%+**   | Near-certain duplicate. Different wording but same task. Default to blocking - false positives here are rare and easy to override.       |
 | **70-89%** | High confidence overlap. Usually the same work but context might differ. Require explicit confirmation to prevent accidental duplicates. |
-| **50-69%** | Related work. Worth knowing about but probably distinct. Inform user but don't block - false positives would be annoying at this level. |
-| **<50%** | Independent work. Similarity is coincidental (shared keywords, common patterns). Proceed without friction. |
+| **50-69%** | Related work. Worth knowing about but probably distinct. Inform user but don't block - false positives would be annoying at this level.  |
+| **<50%**   | Independent work. Similarity is coincidental (shared keywords, common patterns). Proceed without friction.                               |
 
 These thresholds balance false positives (annoying interruptions) vs false negatives (duplicate work). Adjust based on team preference.
 
@@ -98,21 +98,21 @@ These thresholds balance false positives (annoying interruptions) vs false negat
 
 These pairs should be detected as HIGH SIMILARITY (70%+):
 
-| Proposed | Existing | Why Similar |
-|----------|----------|-------------|
-| "add tests for auth" | "write authentication tests" | Same intent, same target |
-| "fix login bug" | "repair authentication issue" | Same action type, same area |
-| "update user profile page" | "modify profile UI" | Same target entity |
-| "add CI pipeline" | "set up GitHub Actions CI" | Same end goal |
-| "improve performance" | "optimize speed" | Same intent |
+| Proposed                   | Existing                      | Why Similar                 |
+| -------------------------- | ----------------------------- | --------------------------- |
+| "add tests for auth"       | "write authentication tests"  | Same intent, same target    |
+| "fix login bug"            | "repair authentication issue" | Same action type, same area |
+| "update user profile page" | "modify profile UI"           | Same target entity          |
+| "add CI pipeline"          | "set up GitHub Actions CI"    | Same end goal               |
+| "improve performance"      | "optimize speed"              | Same intent                 |
 
 These pairs are NOT duplicates (different intent):
 
-| Proposed | Existing | Why Different |
-|----------|----------|---------------|
-| "add login button" | "add logout button" | Different actions |
-| "test auth frontend" | "test auth backend" | Different scope |
-| "add user table" | "add user validation" | Different targets |
+| Proposed             | Existing              | Why Different     |
+| -------------------- | --------------------- | ----------------- |
+| "add login button"   | "add logout button"   | Different actions |
+| "test auth frontend" | "test auth backend"   | Different scope   |
+| "add user table"     | "add user validation" | Different targets |
 
 ### Step 3: Report Findings
 
@@ -142,11 +142,13 @@ c) Add as child/related to existing issue
 ### Step 4: Create or Abort
 
 **If no duplicates (similarity < 50%):**
+
 ```bash
 bd create "Your todo title" -d "Description" -t task
 ```
 
 **If duplicates found:**
+
 - Present the matches
 - Ask user to confirm one of:
   - Cancel (default if HIGH similarity)
@@ -155,25 +157,25 @@ bd create "Your todo title" -d "Description" -t task
 
 ## Command Reference
 
-| Command | Purpose |
-|---------|---------|
-| `bd list --status open --json` | Get open issues |
-| `bd list --status in_progress --json` | Get in-progress issues |
-| `bd list --status blocked --json` | Get blocked issues |
-| `bd create "title" -d "desc" -t type` | Create new issue |
-| `bd show ISSUE-ID` | View issue details |
-| `bd update ISSUE-ID --deps "related:OTHER-ID"` | Link related issues |
+| Command                                        | Purpose                |
+| ---------------------------------------------- | ---------------------- |
+| `bd list --status open --json`                 | Get open issues        |
+| `bd list --status in_progress --json`          | Get in-progress issues |
+| `bd list --status blocked --json`              | Get blocked issues     |
+| `bd create "title" -d "desc" -t type`          | Create new issue       |
+| `bd show ISSUE-ID`                             | View issue details     |
+| `bd update ISSUE-ID --deps "related:OTHER-ID"` | Link related issues    |
 
 ## Anti-Patterns
 
-| Avoid | Why | Instead |
-|-------|-----|---------|
-| Exact string matching only | Misses "add tests" vs "write tests" | Use semantic analysis |
-| Checking only titles | Descriptions often clarify intent | Check both title and description |
-| Auto-creating without check | Defeats the purpose | Always analyze first |
-| Ignoring blocked issues | Blocked work is still active | Check open, in_progress, AND blocked |
-| Binary yes/no matching | Similarity is a spectrum | Use percentage-based scoring |
-| Skipping the check for "quick" todos | Quick todos become duplicate debt | Always check, even for small items |
+| Avoid                                | Why                                 | Instead                              |
+| ------------------------------------ | ----------------------------------- | ------------------------------------ |
+| Exact string matching only           | Misses "add tests" vs "write tests" | Use semantic analysis                |
+| Checking only titles                 | Descriptions often clarify intent   | Check both title and description     |
+| Auto-creating without check          | Defeats the purpose                 | Always analyze first                 |
+| Ignoring blocked issues              | Blocked work is still active        | Check open, in_progress, AND blocked |
+| Binary yes/no matching               | Similarity is a spectrum            | Use percentage-based scoring         |
+| Skipping the check for "quick" todos | Quick todos become duplicate debt   | Always check, even for small items   |
 
 ## Verification
 
@@ -200,6 +202,7 @@ bd list --status blocked --json
 Found: `NEBULA-xyz: "write authentication tests"`
 
 Response:
+
 ```
 HIGH SIMILARITY (88%) with existing issue:
 
@@ -232,6 +235,7 @@ bd create "Add dark mode toggle" -t feature -d "Add a toggle in settings to swit
 ```
 
 Response:
+
 ```
 No similar issues found. Created:
 NEBULA-abc: "Add dark mode toggle" (feature, open)
@@ -242,10 +246,12 @@ NEBULA-abc: "Add dark mode toggle" (feature, open)
 User: "create todo: improve API response times"
 
 Found:
+
 - `NEBULA-123: "Optimize database queries"` (55% similar)
 - `NEBULA-456: "Add caching layer"` (52% similar)
 
 Response:
+
 ```
 MODERATE SIMILARITY with related issues:
 
