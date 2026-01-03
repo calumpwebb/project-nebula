@@ -35,15 +35,15 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     const id = `toast-${++toastId}`
     const duration = options?.duration ?? DEFAULT_DURATIONS[type]
 
-    setToasts((prev) => {
-      const newToasts = [{ id, type, message, duration }, ...prev]
-      return newToasts.slice(0, MAX_VISIBLE_TOASTS)
-    })
+    setToasts((prev) => [{ id, type, message, duration }, ...prev])
   }, [])
 
   const dismissToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id))
   }, [])
+
+  const visibleToasts = toasts.slice(0, MAX_VISIBLE_TOASTS)
+  const queuedCount = Math.max(0, toasts.length - MAX_VISIBLE_TOASTS)
 
   const toast = {
     error: (message: string, options?: ToastOptions) => addToast('error', message, options),
@@ -57,9 +57,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {children}
       {createPortal(
         <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-auto">
-          {toasts.map((t) => (
+          {visibleToasts.map((t) => (
             <Toast key={t.id} toast={t} onDismiss={dismissToast} />
           ))}
+          {queuedCount > 0 && (
+            <div className="text-center text-gray-500 font-mono text-xs">+{queuedCount} more</div>
+          )}
         </div>,
         document.body
       )}
