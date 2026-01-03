@@ -18,6 +18,8 @@ const middleware = [appVersionMw.server, authMw.server].filter(
 )
 
 // Compose middleware using reduce
+// TODO(NEBULA-xxx): Fix TypeScript inference for reduce chain composition
+// Runtime works fine, but TS can't infer types through the customQuery/customMutation/customAction chain
 export const query = middleware.reduce((acc, mw) => customQuery(acc, mw.query), baseQuery)
 
 export const mutation = middleware.reduce(
