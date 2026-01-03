@@ -18,38 +18,7 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /* Pure black background */
-  --background: 0 0% 0%;
-  --foreground: 0 0% 95%;
-
-  /* Blue accent */
-  --primary: 217 91% 60%;
-  --primary-foreground: 0 0% 100%;
-
-  /* Muted tones */
-  --secondary: 0 0% 10%;
-  --secondary-foreground: 0 0% 95%;
-
-  --muted: 0 0% 8%;
-  --muted-foreground: 0 0% 60%;
-
-  /* Accent colors */
-  --accent: 0 0% 12%;
-  --accent-foreground: 0 0% 95%;
-
-  /* Destructive (red) */
-  --destructive: 0 84% 60%;
-  --destructive-foreground: 0 0% 100%;
-
-  /* Borders and inputs */
-  --border: 0 0% 15%;
-  --input: 0 0% 15%;
-  --ring: 217 91% 60%;
-
-  /* Border radius */
-  --radius: 0.5rem;
-}
+@import './theme.css';
 
 @layer base {
   * {

@@ -1,0 +1,37 @@
+/* Centralized Theme Configuration */
+/* This file defines all color variables for the application. */
+/* To add new themes in the future, create additional color schemes here. */
+
+:root {
+  /* ---- Base Colors ---- */
+  --background: 0 0% 0%;
+  --foreground: 0 0% 95%;
+
+  /* ---- Primary (Bright Purple) ---- */
+  --primary: 270 100% 70%;
+  --primary-foreground: 0 0% 100%;
+
+  /* ---- Secondary ---- */
+  --secondary: 0 0% 10%;
+  --secondary-foreground: 0 0% 95%;
+
+  /* ---- Muted ---- */
+  --muted: 0 0% 8%;
+  --muted-foreground: 0 0% 60%;
+
+  /* ---- Accent ---- */
+  --accent: 0 0% 12%;
+  --accent-foreground: 0 0% 95%;
+
+  /* ---- Destructive (Red) ---- */
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+
+  /* ---- UI Elements ---- */
+  --border: 0 0% 15%;
+  --input: 0 0% 15%;
+  --ring: 270 100% 70%;
+
+  /* ---- Layout ---- */
+  --radius: 0.5rem;
+}
