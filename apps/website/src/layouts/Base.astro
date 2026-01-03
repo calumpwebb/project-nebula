@@ -1,0 +1,26 @@
+---
+interface Props {
+  title: string
+  description?: string
+}
+
+const { title, description = 'Developer HUD for AI-assisted coding' } = Astro.props
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <title>{title}</title>
+  </head>
+  <body class="min-h-screen flex items-center justify-center">
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  @import '../styles/globals.css';
+</style>
