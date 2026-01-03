@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import { ConvexReactClient } from 'convex/react'
 import { ConvexBetterAuthProvider } from '@convex-dev/better-auth/react'
 import { RouterProvider } from '@tanstack/react-router'
-import { attachConsole } from '@tauri-apps/plugin-log'
+import { attachConsole, info } from '@tauri-apps/plugin-log'
 import { authClient } from './lib/auth-client'
 import { router } from './router'
 import { ErrorBoundary } from './components/ErrorBoundary'
@@ -11,18 +11,14 @@ import './styles/globals.css'
 
 declare const __APP_VERSION__: string
 
-// Forward console.log/error/etc to Rust logger
-attachConsole()
-  .then(() => {
-    console.info(`[frontend] Nebula v${__APP_VERSION__} starting...`)
-    console.info(`[frontend] VITE_CONVEX_URL: ${import.meta.env.VITE_CONVEX_URL}`)
-    console.info(`[frontend] VITE_CONVEX_SITE_URL: ${import.meta.env.VITE_CONVEX_SITE_URL}`)
-    console.info(`[frontend] VITE_ENVIRONMENT: ${import.meta.env.VITE_ENVIRONMENT}`)
-  })
-  .catch((err) => {
-    // Fallback if attachConsole fails (e.g., not in Tauri context)
-    console.error('[frontend] Failed to attach console:', err)
-  })
+// Log env vars immediately using Tauri's log plugin
+info(`[frontend] Nebula v${__APP_VERSION__} starting...`)
+info(`[frontend] VITE_CONVEX_URL: ${import.meta.env.VITE_CONVEX_URL}`)
+info(`[frontend] VITE_CONVEX_SITE_URL: ${import.meta.env.VITE_CONVEX_SITE_URL}`)
+info(`[frontend] VITE_ENVIRONMENT: ${import.meta.env.VITE_ENVIRONMENT}`)
+
+// Also attach console for other logs
+attachConsole().catch(() => {})
 
 // Wrap initialization in try-catch to surface errors that happen before React renders
 let convex: ConvexReactClient
