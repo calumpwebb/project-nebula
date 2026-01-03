@@ -3,6 +3,11 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
+  "exports": {
+    ".": "./convex/_generated/api.js",
+    "./client": "./client/index.ts",
+    "./server": "./convex/middleware/server.ts"
+  },
   "scripts": {
     "dev": "convex dev --local",
     "check": "[ -d convex/_generated ] && tsc --noEmit || echo 'Run convex dev first to generate types'",

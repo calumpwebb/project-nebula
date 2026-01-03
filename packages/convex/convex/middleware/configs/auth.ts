@@ -4,7 +4,7 @@ import { authComponent } from '../../auth'
 export const auth: MiddlewareConfig<
   Record<string, never>,
   boolean | undefined,
-  { user: Awaited<ReturnType<typeof authComponent.getAuthUser>> },
+  { user: Awaited<ReturnType<typeof authComponent.getAuthUser>> | null },
   'skipAuth'
 > = {
   name: 'auth',
@@ -14,11 +14,7 @@ export const auth: MiddlewareConfig<
     handle: async (skipAuth, { ctx, functionName }) => {
       if (skipAuth) {
         console.info(`[AUTH SKIPPED] ${functionName}`)
-        // When skipping auth, we still need to return the correct type shape
-        // but without adding the user property
-        return {
-          ctx: ctx as typeof ctx & { user: Awaited<ReturnType<typeof authComponent.getAuthUser>> },
-        }
+        return { ctx: { ...ctx, user: null } }
       }
       const user = await authComponent.getAuthUser(ctx)
       if (!user) throw new Error('Unauthorized')

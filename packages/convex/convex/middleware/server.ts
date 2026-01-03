@@ -11,13 +11,18 @@ import {
 
 // Middleware runs top-to-bottom
 const appVersionMw = buildMiddleware(appVersion)
-// TODO(NEBULA-xxx): Implement proper middleware composition
+const authMw = buildMiddleware(auth)
 
-const _authMw = buildMiddleware(auth) // Reserved for composition
+const middleware = [appVersionMw.server, authMw.server].filter(
+  (mw): mw is NonNullable<typeof mw> => mw !== null
+)
 
-// TODO(NEBULA-xxx): Implement proper middleware composition
-// Currently exporting just the appVersion middleware to verify type-checking works.
-// Full composition will be implemented after fixing type issues with chaining.
-export const query = customQuery(baseQuery, appVersionMw.server!.query)
-export const mutation = customMutation(baseMutation, appVersionMw.server!.mutation)
-export const action = customAction(baseAction, appVersionMw.server!.action)
+// Compose middleware using reduce
+export const query = middleware.reduce((acc, mw) => customQuery(acc, mw.query), baseQuery)
+
+export const mutation = middleware.reduce(
+  (acc, mw) => customMutation(acc, mw.mutation),
+  baseMutation
+)
+
+export const action = middleware.reduce((acc, mw) => customAction(acc, mw.action), baseAction)
