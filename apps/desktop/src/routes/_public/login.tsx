@@ -356,9 +356,20 @@ function LoginPage() {
           <NebulaLogo />
         </div>
 
-        <div className="text-white mb-4">
-          <span className="text-primary">$ </span>
-          {mode === 'sign-up' ? 'create_account' : 'sign_in'}
+        <div className="text-white mb-4 flex justify-between items-center">
+          <div>
+            <span className="text-primary">$ </span>
+            {mode === 'sign-up' ? 'create_account' : 'sign_in'}
+          </div>
+          {mode === 'sign-in' && (
+            <button
+              type="button"
+              onClick={() => setMode('forgot-password-email')}
+              className="text-xs text-gray-500 hover:text-gray-400 transition-colors"
+            >
+              forgot password?
+            </button>
+          )}
         </div>
 
         {mode === 'sign-up' && (
@@ -402,18 +413,6 @@ function LoginPage() {
             name="confirmPassword"
             id="confirmPassword"
           />
-        )}
-
-        {mode === 'sign-in' && (
-          <div className="mt-1">
-            <button
-              type="button"
-              onClick={() => setMode('forgot-password-email')}
-              className="text-xs text-gray-500 hover:text-gray-400 transition-colors"
-            >
-              forgot password?
-            </button>
-          </div>
         )}
 
         <div className="mt-4 space-y-2">
