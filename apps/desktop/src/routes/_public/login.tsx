@@ -31,7 +31,9 @@ function LoginPage() {
   const [name, setName] = useState('')
   const [isVerifying, setIsVerifying] = useState(false)
   const [_resetCodeSent, setResetCodeSent] = useState(false)
-  const [_verifiedOtp, setVerifiedOtp] = useState('')
+  const [verifiedOtp, setVerifiedOtp] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmNewPassword, setConfirmNewPassword] = useState('')
 
   // Navigate to dashboard when session becomes available
   useEffect(() => {
@@ -168,6 +170,68 @@ function LoginPage() {
     setMode('forgot-password-reset')
   }
 
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (newPassword !== confirmNewPassword) {
+      toast.error('passwords do not match')
+      return
+    }
+
+    if (newPassword.length < 1) {
+      toast.error('password is required')
+      return
+    }
+
+    setIsVerifying(true)
+
+    try {
+      const result = await authClient.emailOtp.resetPassword({
+        email,
+        otp: verifiedOtp,
+        password: newPassword,
+      })
+
+      if (result.error) {
+        toast.error(result.error.message || 'failed to reset password')
+        // If OTP was invalid, go back to OTP screen
+        if (
+          result.error.message?.includes('invalid') ||
+          result.error.message?.includes('expired')
+        ) {
+          setMode('forgot-password-otp')
+          setVerifiedOtp('')
+        }
+      } else {
+        // Auto sign-in
+        const signInResult = await authClient.signIn.email({
+          email,
+          password: newPassword,
+        })
+
+        if (signInResult.error) {
+          toast.success('password reset successfully')
+          setMode('sign-in')
+          resetForgotPasswordState()
+        } else {
+          toast.success('password reset successfully')
+          // Session watcher will navigate to dashboard
+        }
+      }
+    } catch {
+      toast.error('failed to reset password')
+    } finally {
+      setIsVerifying(false)
+    }
+  }
+
+  const resetForgotPasswordState = () => {
+    setNewPassword('')
+    setConfirmNewPassword('')
+    setVerifiedOtp('')
+    setResetCodeSent(false)
+  }
+
   // Verify email mode
   if (mode === 'verify-email') {
     return (
@@ -241,6 +305,56 @@ function LoginPage() {
         isVerifying={false}
         verifyButtonText="[ verify code ]"
       />
+    )
+  }
+
+  // Forgot password - new password entry
+  if (mode === 'forgot-password-reset') {
+    return (
+      <div className="text-sm w-[380px]">
+        <form onSubmit={handleResetPassword} noValidate className="p-6">
+          <div className="flex justify-center mb-6">
+            <NebulaLogo />
+          </div>
+
+          <div className="text-white mb-4">
+            <span className="text-gray-400">// </span>
+            create your new password
+          </div>
+
+          <TerminalInput
+            label="password"
+            type="password"
+            value={newPassword}
+            onChange={setNewPassword}
+            autoFocus
+          />
+
+          <TerminalInput
+            label="confirm"
+            type="password"
+            value={confirmNewPassword}
+            onChange={setConfirmNewPassword}
+          />
+
+          <div className="mt-4 space-y-2">
+            <TerminalButton type="submit" variant="primary" disabled={isVerifying}>
+              {isVerifying ? '[ resetting... ]' : '[ reset password ]'}
+            </TerminalButton>
+
+            <TerminalButton
+              onClick={() => {
+                setMode('forgot-password-otp')
+                setNewPassword('')
+                setConfirmNewPassword('')
+              }}
+              variant="link"
+            >
+              {'<'} back
+            </TerminalButton>
+          </div>
+        </form>
+      </div>
     )
   }
 
