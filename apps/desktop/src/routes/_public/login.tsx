@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
 import { authClient } from '../../lib/auth-client'
+import { useToast } from '../../components/Toast'
 
 export const Route = createFileRoute('/_public/login')({
   component: LoginPage,
@@ -97,12 +98,12 @@ function TerminalButton({
 
 function LoginPage() {
   const navigate = useNavigate()
+  const { toast } = useToast()
   const { data: session } = authClient.useSession()
   const [isSignUp, setIsSignUp] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
-  const [error, setError] = useState('')
   const [pendingVerification, setPendingVerification] = useState(false)
   const [otp, setOtp] = useState('')
   const [countdown, setCountdown] = useState(30)
@@ -128,7 +129,6 @@ function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
 
     try {
       if (isSignUp) {
@@ -138,7 +138,7 @@ function LoginPage() {
           name,
         })
         if (result.error) {
-          setError(result.error.message || 'Sign up failed')
+          toast.error(result.error.message || 'sign up failed')
         } else {
           setPendingVerification(true)
         }
@@ -149,18 +149,18 @@ function LoginPage() {
         })
         if (result.error) {
           if (result.error.status === 403) {
-            setError('Please verify your email before signing in')
+            toast.error('please verify your email before signing in')
             setPendingVerification(true)
           } else if (result.error.status === 401 || result.error.status === 400) {
-            setError('incorrect email or password')
+            toast.error('incorrect email or password')
           } else {
-            setError(result.error.message || 'Sign in failed')
+            toast.error(result.error.message || 'sign in failed')
           }
         }
         // On success, the useEffect watching session will navigate us
       }
     } catch {
-      setError('An unexpected error occurred')
+      toast.error('an unexpected error occurred')
     }
   }
 
@@ -173,24 +173,23 @@ function LoginPage() {
         type: 'email-verification',
       })
       if (result.error) {
-        setError(result.error.message || 'Failed to send verification code')
+        toast.error(result.error.message || 'failed to send verification code')
       } else {
-        setError('')
+        toast.success('verification code sent')
         setCountdown(30)
       }
     } catch {
-      setError('Failed to send verification code')
+      toast.error('failed to send verification code')
     }
   }
 
   const handleVerifyOtp = async () => {
     if (otp.length !== 6) {
-      setError('Please enter a 6-digit code')
+      toast.error('please enter a 6-digit code')
       return
     }
 
     setIsVerifying(true)
-    setError('')
 
     try {
       const result = await authClient.emailOtp.verifyEmail({
@@ -198,11 +197,11 @@ function LoginPage() {
         otp,
       })
       if (result.error) {
-        setError(result.error.message || 'Invalid verification code')
+        toast.error(result.error.message || 'invalid verification code')
       }
       // On success, the useEffect watching session will navigate us
     } catch {
-      setError('Verification failed')
+      toast.error('verification failed')
     } finally {
       setIsVerifying(false)
     }
@@ -220,13 +219,6 @@ function LoginPage() {
             <span className="text-gray-400">// </span>
             verification code sent to {email}
           </div>
-
-          {error && (
-            <div className="mb-4 text-red-400">
-              <span className="text-red-600">error: </span>
-              {error}
-            </div>
-          )}
 
           <div className="flex items-center gap-2 mb-4">
             <span className="text-white font-bold">code:</span>
@@ -266,7 +258,6 @@ function LoginPage() {
                 setPendingVerification(false)
                 setOtp('')
                 setCountdown(30)
-                setError('')
               }}
               variant="link"
             >
@@ -289,13 +280,6 @@ function LoginPage() {
           <span className="text-primary">$ </span>
           {isSignUp ? 'create_account' : 'sign_in'}
         </div>
-
-        {error && (
-          <div className="mb-4 text-red-400">
-            <span className="text-red-600">error: </span>
-            {error}
-          </div>
-        )}
 
         {isSignUp && <TerminalInput label="name" value={name} onChange={setName} />}
 

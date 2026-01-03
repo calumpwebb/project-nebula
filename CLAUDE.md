@@ -46,6 +46,7 @@ apps/<name>/deploy/manifest.ts (cdk8s), packages/convex, packages/shared, infra/
 ## Key Patterns
 
 - Enums over strings: `import { TicketStatus, MissionPhase } from '@nebula/shared'`
+- Toasts over inline errors: Use `useToast()` from `components/Toast` for error/success/warning/info messages. Never show inline error divs.
 - Comment style: No multi-line dividers. Use single line or `// ---- Header ----` for sections.
 - Convex uses string literals matching enum values ('brainstorm', 'design', etc.)
 - Run `just up` before type-checking convex (generates \_generated/)
