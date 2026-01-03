@@ -1,13 +1,13 @@
 import { createClient, type GenericCtx } from '@convex-dev/better-auth'
+import { requireActionCtx } from '@convex-dev/better-auth/utils'
 import { convex, crossDomain } from '@convex-dev/better-auth/plugins'
-import { components } from './_generated/api'
+import { components, internal } from './_generated/api'
 import type { DataModel } from './_generated/dataModel'
 import { query } from './_generated/server'
 import { betterAuth } from 'better-auth/minimal'
 import { emailOTP } from 'better-auth/plugins'
 import authConfig from './auth.config'
 import { sendEmail } from './emails'
-import { rateLimiter } from './lib/middleware/rateLimiter'
 
 // TODO(NEBULA-uy7): Set SITE_URL env var in production
 const siteUrl = process.env.SITE_URL ?? 'http://localhost:1420'
@@ -45,14 +45,15 @@ export const createAuth = (ctx: GenericCtx<DataModel>) => {
         sendVerificationOnSignUp: true,
         async sendVerificationOTP({ email, otp, type }) {
           // Enforce 30s cooldown between OTP sends
-          const { ok, retryAfter } = await rateLimiter.limit(components.rateLimiter, 'otpSend', {
-            key: email,
-            throws: false,
-          })
+          const actionCtx = requireActionCtx(ctx)
+          const { ok, retryAfter } = await actionCtx.runMutation(
+            internal.features.auth.mutations.checkOtpRateLimit,
+            { email }
+          )
 
           if (!ok) {
             throw new Error(
-              `Please wait ${Math.ceil(retryAfter / 1000)} seconds before requesting another code`
+              `Please wait ${Math.ceil((retryAfter ?? 30000) / 1000)} seconds before requesting another code`
             )
           }
 
