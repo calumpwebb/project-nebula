@@ -236,13 +236,30 @@ public func showUpdateRequiredDialog(currentVersion: SRString, newVersion: SRStr
     let new = newVersion.toString()
 
     DispatchQueue.main.sync {
-        let alert = NSAlert()
-        alert.messageText = "Update Required"
-        alert.informativeText = "Please install the latest version of Nebula to continue.\n\n\(current) → \(new)"
-        alert.alertStyle = .informational
-        alert.icon = getAppIcon()
-        alert.addButton(withTitle: "Update Now")
-        alert.runModal()
+        while true {
+            let alert = NSAlert()
+            alert.messageText = "Update Required"
+            alert.informativeText = "Please install the latest version of Nebula to continue.\n\n\(current) → \(new)"
+            alert.alertStyle = .informational
+            alert.icon = getAppIcon()
+            alert.addButton(withTitle: "Update Now")
+            alert.addButton(withTitle: "View Release Notes")
+
+            let response = alert.runModal()
+
+            if response == .alertSecondButtonReturn {
+                // View Release Notes clicked - open GitHub compare URL
+                let compareUrl = "https://github.com/calumpwebb/nebula/compare/v\(current)...v\(new)"
+                if let url = URL(string: compareUrl) {
+                    NSWorkspace.shared.open(url)
+                }
+                // Loop to show dialog again
+                continue
+            }
+
+            // Update Now clicked - exit loop
+            break
+        }
     }
 }
 
