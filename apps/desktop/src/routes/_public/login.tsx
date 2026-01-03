@@ -190,7 +190,7 @@ function LoginPage() {
         )}
 
         <input
-          type="email"
+          type="text"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -205,7 +205,6 @@ function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
           className="w-full mb-4 px-3 py-2 bg-gray-800 border border-gray-700 rounded text-white"
           required
-          minLength={8}
         />
 
         <button

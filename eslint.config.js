@@ -29,8 +29,18 @@ export default tseslint.config(
         'error',
         { path: 'always', types: 'prefer-import', lib: 'always' },
       ],
-      // Nebula custom rules
-      'nebula/require-skip-auth-reason': 'error',
+      // Block direct imports - enforce middleware usage
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['*/_generated/server'],
+              message: 'Use wrapped query/mutation/action from middleware/server instead.',
+            },
+          ],
+        },
+      ],
     },
   }
 )
