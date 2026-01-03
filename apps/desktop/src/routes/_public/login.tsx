@@ -1,52 +1,26 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
+import { z } from 'zod'
 import { authClient } from '../../lib/auth-client'
 import { useToast } from '../../components/Toast'
 import { TerminalInput } from '../../components/TerminalInput'
+import { NebulaLogo } from '../../components/NebulaLogo'
+import { TerminalButton } from '../../components/TerminalButton'
+
+const signInSchema = z.object({
+  email: z.string().min(1, 'email is required').email('invalid email format'),
+  password: z.string().min(1, 'password is required'),
+})
+
+const signUpSchema = z.object({
+  name: z.string().min(1, 'name is required'),
+  email: z.string().min(1, 'email is required').email('invalid email format'),
+  password: z.string().min(8, 'password must be at least 8 characters'),
+})
 
 export const Route = createFileRoute('/_public/login')({
   component: LoginPage,
 })
-
-const NEBULA_LOGO = `███╗   ██╗███████╗██████╗ ██╗   ██╗██╗      █████╗
-████╗  ██║██╔════╝██╔══██╗██║   ██║██║     ██╔══██╗
-██╔██╗ ██║█████╗  ██████╔╝██║   ██║██║     ███████║
-██║╚██╗██║██╔══╝  ██╔══██╗██║   ██║██║     ██╔══██║
-██║ ╚████║███████╗██████╔╝╚██████╔╝███████╗██║  ██║
-╚═╝  ╚═══╝╚══════╝╚═════╝  ╚═════╝ ╚══════╝╚═╝  ╚═╝`
-
-function TerminalButton({
-  children,
-  onClick,
-  type = 'button',
-  disabled,
-  variant = 'primary',
-}: {
-  children: React.ReactNode
-  onClick?: () => void
-  type?: 'button' | 'submit'
-  disabled?: boolean
-  variant?: 'primary' | 'secondary' | 'link'
-}) {
-  const baseStyles =
-    'w-full py-1.5 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
-  const variants = {
-    primary: 'text-primary hover:text-primary/80 border border-primary hover:border-primary/80',
-    secondary: 'text-gray-500 hover:text-gray-400 border border-gray-700 hover:border-gray-600',
-    link: 'text-primary/60 hover:text-primary border-none',
-  }
-
-  return (
-    <button
-      type={type}
-      onClick={onClick}
-      disabled={disabled}
-      className={`${baseStyles} ${variants[variant]}`}
-    >
-      {children}
-    </button>
-  )
-}
 
 function LoginPage() {
   const navigate = useNavigate()
@@ -82,6 +56,17 @@ function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    // Validate before sending
+    const schema = isSignUp ? signUpSchema : signInSchema
+    const data = isSignUp ? { name, email, password } : { email, password }
+    const validation = schema.safeParse(data)
+
+    if (!validation.success) {
+      const firstError = validation.error.issues[0]
+      toast.error(firstError?.message || 'validation failed')
+      return
+    }
+
     try {
       if (isSignUp) {
         const result = await authClient.signUp.email({
@@ -111,7 +96,8 @@ function LoginPage() {
         }
         // On success, the useEffect watching session will navigate us
       }
-    } catch {
+    } catch (error) {
+      console.error('Sign in/up error:', error)
       toast.error('an unexpected error occurred')
     }
   }
@@ -164,7 +150,7 @@ function LoginPage() {
       <div className="text-sm w-[380px]">
         <div className="p-6">
           <div className="flex justify-center mb-6">
-            <pre className="text-primary text-[10px] leading-none select-none">{NEBULA_LOGO}</pre>
+            <NebulaLogo />
           </div>
 
           <div className="text-white mb-4">
@@ -225,7 +211,7 @@ function LoginPage() {
     <div className="text-sm w-[380px]">
       <form onSubmit={handleSubmit} noValidate className="p-6">
         <div className="flex justify-center mb-6">
-          <pre className="text-primary text-[10px] leading-none select-none">{NEBULA_LOGO}</pre>
+          <NebulaLogo />
         </div>
 
         <div className="text-white mb-4">
@@ -235,10 +221,8 @@ function LoginPage() {
 
         {isSignUp && <TerminalInput label="name" value={name} onChange={setName} />}
 
-        {/* TODO(NEBULA-52o): Restore type="email" for validation */}
         <TerminalInput label="email" value={email} onChange={setEmail} autoFocus />
 
-        {/* TODO(NEBULA-52o): Restore minLength={8} for validation */}
         <TerminalInput label="password" type="password" value={password} onChange={setPassword} />
 
         <div className="mt-4 space-y-2">

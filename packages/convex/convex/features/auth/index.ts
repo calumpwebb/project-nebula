@@ -13,15 +13,14 @@ const siteUrl = process.env.SITE_URL ?? 'http://localhost:1420'
 
 export const authComponent = createClient<DataModel>(components.betterAuth)
 
-export const createAuth = (ctx: GenericCtx<DataModel>) => {
+export const createAuth = (ctx: GenericCtx<DataModel>): ReturnType<typeof betterAuth> => {
   return betterAuth({
     trustedOrigins: [siteUrl],
     database: authComponent.adapter(ctx),
     emailAndPassword: {
       enabled: true,
       requireEmailVerification: true,
-      // TODO(NEBULA-52o): Restore minPasswordLength to 8
-      minPasswordLength: 1,
+      minPasswordLength: 8,
       maxPasswordLength: 128,
       // TODO(NEBULA-c36): Integrate Resend for real email delivery
       sendResetPasswordEmail: async ({ user, url }: { user: { email: string }; url: string }) => {
