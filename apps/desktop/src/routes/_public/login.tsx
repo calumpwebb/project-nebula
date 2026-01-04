@@ -28,7 +28,7 @@ function LoginPage() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [name, setName] = useState('')
-  const [isVerifying, setIsVerifying] = useState(false)
+  const [isResettingPassword, setIsResettingPassword] = useState(false)
   const [verifiedOtp, setVerifiedOtp] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmNewPassword, setConfirmNewPassword] = useState('')
@@ -98,25 +98,18 @@ function LoginPage() {
   }
 
   const handleVerifyEmail = async (otp: string) => {
-    if (otp.length !== 6) {
-      toast.error('please enter a 6-digit code')
-      return
-    }
-
-    setIsVerifying(true)
-
     try {
       const result = await authClient.emailOtp.verifyEmail({
         email,
         otp,
       })
       if (result.error) {
-        toast.error(result.error.message || 'invalid verification code')
+        return { error: { message: result.error.message || 'invalid verification code' } }
       }
+      // Success - return void
+      return
     } catch {
-      toast.error('verification failed')
-    } finally {
-      setIsVerifying(false)
+      return { error: { message: 'verification failed' } }
     }
   }
 
@@ -152,11 +145,6 @@ function LoginPage() {
   }
 
   const handleVerifyResetCode = async (otp: string) => {
-    if (otp.length !== 6) {
-      toast.error('please enter a 6-digit code')
-      return
-    }
-
     // Store OTP and move to password reset screen
     // The actual verification happens when we reset the password
     setVerifiedOtp(otp)
@@ -176,7 +164,7 @@ function LoginPage() {
       return
     }
 
-    setIsVerifying(true)
+    setIsResettingPassword(true)
 
     try {
       const result = await authClient.emailOtp.resetPassword({
@@ -214,7 +202,7 @@ function LoginPage() {
     } catch {
       toast.error('failed to reset password')
     } finally {
-      setIsVerifying(false)
+      setIsResettingPassword(false)
     }
   }
 
@@ -233,7 +221,6 @@ function LoginPage() {
         onVerify={handleVerifyEmail}
         onResend={handleResendVerification}
         onBack={() => setMode('sign-in')}
-        isVerifying={isVerifying}
       />
     )
   }
@@ -295,7 +282,6 @@ function LoginPage() {
           setMode('forgot-password-email')
           setVerifiedOtp('')
         }}
-        isVerifying={false}
         verifyButtonText="Verify code"
       />
     )
@@ -332,8 +318,13 @@ function LoginPage() {
           />
 
           <div className="mt-6 space-y-3">
-            <Button type="submit" variant="primary" disabled={isVerifying} className="w-full">
-              {isVerifying ? 'Resetting...' : 'Reset password'}
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={isResettingPassword}
+              className="w-full"
+            >
+              {isResettingPassword ? 'Resetting...' : 'Reset password'}
             </Button>
 
             <div className="text-center pt-2">

@@ -4,10 +4,9 @@ import { Button } from './Button'
 type OtpVerificationScreenProps = {
   email: string
   description: string
-  onVerify: (otp: string) => Promise<void>
+  onVerify: (otp: string) => Promise<{ error?: { message?: string } } | void>
   onResend: () => Promise<void>
   onBack: () => void
-  isVerifying: boolean
   verifyButtonText?: string
   verifyingButtonText?: string
 }
@@ -18,11 +17,12 @@ export function OtpVerificationScreen({
   onVerify,
   onResend,
   onBack,
-  isVerifying,
   verifyButtonText = 'Verify',
   verifyingButtonText = 'Verifying...',
 }: OtpVerificationScreenProps) {
   const [otp, setOtp] = useState('')
+  const [isVerifying, setIsVerifying] = useState(false)
+  const [error, setError] = useState<string>('')
   const [countdown, setCountdown] = useState(30)
 
   useEffect(() => {
@@ -35,8 +35,27 @@ export function OtpVerificationScreen({
     return () => clearInterval(timer)
   }, [countdown])
 
+  const handleVerify = async () => {
+    setError('')
+
+    if (otp.length !== 6) {
+      setError('Please enter a 6-digit code')
+      return
+    }
+
+    setIsVerifying(true)
+    try {
+      const result = await onVerify(otp)
+      if (result?.error) {
+        setError(result.error.message || 'Invalid verification code')
+      }
+    } finally {
+      setIsVerifying(false)
+    }
+  }
+
   const handleResend = async () => {
-    if (countdown > 0) return
+    setError('')
     await onResend()
     setCountdown(30)
   }
@@ -62,17 +81,28 @@ export function OtpVerificationScreen({
             onChange={(e) => {
               const value = e.target.value.replace(/\D/g, '').slice(0, 6)
               setOtp(value)
+              setError('')
             }}
             placeholder="000000"
             maxLength={6}
             autoFocus
-            className="w-full px-4 py-3 text-center text-2xl tracking-wider bg-background border border-input rounded-md transition-colors focus:outline-none focus:border-input-focus focus:ring-1 focus:ring-ring font-mono"
+            className={`
+              w-full px-4 py-3 text-center text-2xl tracking-wider
+              bg-background border rounded-md font-mono
+              transition-colors focus:outline-none focus:ring-1
+              ${
+                error
+                  ? 'border-destructive focus:border-destructive focus:ring-destructive'
+                  : 'border-input focus:border-input-focus focus:ring-ring'
+              }
+            `}
           />
+          {error && <p className="mt-2 text-sm text-destructive text-center">{error}</p>}
         </div>
 
         <div className="space-y-3">
           <Button
-            onClick={() => onVerify(otp)}
+            onClick={handleVerify}
             disabled={otp.length !== 6 || isVerifying}
             variant="primary"
             className="w-full"
