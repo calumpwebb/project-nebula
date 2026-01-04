@@ -88,7 +88,26 @@ Icons must be **8-bit RGBA PNG**. Use `magick ... PNG32:output.png` to force RGB
 
 ## Desktop Releases
 
-Use `./scripts/release-desktop.sh` directly. It handles version bumping, tagging, and pushing. CI builds and publishes the release automatically.
+Use `./scripts/release-desktop.sh` directly:
+
+```bash
+# 1. Check commits since last release
+git log $(git tag -l "desktop-v*" --sort=-v:refname | head -1)..HEAD --oneline
+
+# 2. Determine version bump (MAJOR.MINOR.PATCH)
+#    - feat commits → MINOR bump
+#    - fix/chore only → PATCH bump
+#    - BREAKING CHANGE → MAJOR bump
+
+# 3. Run release script
+./scripts/release-desktop.sh --version "X.Y.Z" --notes "## Features
+- Feature description (commit-hash)
+
+## Fixes
+- Fix description (commit-hash)"
+```
+
+The script handles version bumping, tagging, and pushing. CI builds and publishes the release automatically. Monitor at: https://github.com/calumpwebb/nebula/actions
 
 ## Slash Commands
 
