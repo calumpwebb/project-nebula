@@ -44,7 +44,7 @@ function ForgotPasswordPage() {
         }}
         noValidate
         autoComplete="on"
-        className="bg-white rounded-lg shadow-[var(--card-shadow)] p-8"
+        className="bg-white rounded-lg border border-border shadow-[var(--card-shadow)] p-8"
       >
         <div className="text-center mb-6">
           <h2 className="text-xl font-semibold text-foreground">Reset password</h2>

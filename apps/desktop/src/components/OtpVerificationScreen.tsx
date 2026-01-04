@@ -62,7 +62,7 @@ export function OtpVerificationScreen({
 
   return (
     <div className="w-full max-w-sm">
-      <div className="bg-white rounded-lg shadow-[var(--card-shadow)] p-8">
+      <div className="bg-white rounded-lg border border-border shadow-[var(--card-shadow)] p-8">
         <div className="text-center mb-6">
           <h2 className="text-xl font-semibold text-foreground mb-2">Enter verification code</h2>
           <p className="text-sm text-foreground-secondary">
