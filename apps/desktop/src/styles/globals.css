@@ -22,7 +22,7 @@
 /* Apple-inspired modern SaaS color system */
 :root {
   /* ---- Backgrounds ---- */
-  --background: 0 0% 100%;           /* Pure white */
+  --background: 0 0% 99%;            /* Slightest off-white */
   --surface: 0 0% 98%;               /* Subtle off-white for cards/panels */
   --surface-hover: 0 0% 96%;         /* Hover state for interactive surfaces */
 
@@ -88,7 +88,7 @@
   }
 
   html {
-    background-color: white;
+    background-color: hsl(var(--background));
     overscroll-behavior: none;
   }
 
