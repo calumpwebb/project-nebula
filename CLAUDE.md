@@ -18,7 +18,7 @@ Uses bd (beads) for ALL tracking. No markdown TODOs. Details: `AGENTS.md`
 
 ## Tech Stack
 
-Tauri 2, React, TailwindCSS, Convex, Temporal, k3d, Tilt, pnpm, Turbo
+Tauri 2, React, TailwindCSS, TanStack Router, TanStack Form, Convex, Temporal, k3d, Tilt, pnpm, Turbo
 
 ## Desktop Logging
 
@@ -46,7 +46,7 @@ apps/<name>/deploy/manifest.ts (cdk8s), packages/convex, packages/shared, infra/
 ## Key Patterns
 
 - Enums over strings: `import { TicketStatus, MissionPhase } from '@nebula/shared'`
-- Toasts over inline errors: Use `useToast()` from `components/Toast` for error/success/warning/info messages. Never show inline error divs.
+- Forms: Use TanStack Form for all forms. Show errors inline below inputs (field errors) and below submit button (form-level errors). No toasts.
 - Comment style: No multi-line dividers. Use single line or `// ---- Header ----` for sections.
 - Convex uses string literals matching enum values ('brainstorm', 'design', etc.)
 - Run `just up` before type-checking convex (generates \_generated/)
