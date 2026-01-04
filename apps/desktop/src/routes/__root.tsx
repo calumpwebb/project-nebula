@@ -1,6 +1,7 @@
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import type { RouterContext } from '../router'
+import { StippleBackground } from '../components/StippleBackground'
 
 export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootLayout,
@@ -13,6 +14,7 @@ function RootLayout() {
 
   return (
     <div className="h-screen flex flex-col bg-background">
+      <StippleBackground />
       {/* Draggable Title Bar */}
       <div
         onMouseDown={startDrag}
