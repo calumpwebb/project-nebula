@@ -10,7 +10,7 @@ export const Route = createFileRoute('/_public/verify-email')({
 function VerifyEmailPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { data: session } = authClient.useSession()
+  const { data: session, refetch } = authClient.useSession()
   const email = (location.state as { email?: string } | undefined)?.email || ''
 
   useEffect(() => {
@@ -43,9 +43,9 @@ function VerifyEmailPage() {
       }
     }
 
-    // verifyEmail should create a session, navigate to dashboard
-    // If session isn't created, _public layout will redirect to login
-    navigate({ to: '/' })
+    // Manually refetch session to update client state (better-auth doesn't auto-revalidate)
+    await refetch()
+    // useEffect above will navigate once session loads
     return undefined
   }
 
